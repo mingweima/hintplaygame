@@ -3,9 +3,9 @@ from abc import ABC
 from copy import deepcopy
 
 import gym
-from gym import spaces
 import numpy as np
 import torch
+from gym import spaces
 
 # torch.cuda.is_available() checks and returns a Boolean True if a GPU is available, else it'll return False
 is_cuda = torch.cuda.is_available()
@@ -23,7 +23,6 @@ else:
 class Hp():
     def __init__(self,
                  opt='adam',
-                 batch_size=256,
                  hand_size=5,
                  nlab1=5,
                  nlab2=5,
@@ -31,11 +30,7 @@ class Hp():
                  epsilon=.1):
         self.lr_sgd = 0.5
         self.lr_adam = 0.001
-        self.batch_size = batch_size
         self.opt = opt
-        self.n_update = 1000
-        self.hidden = 128
-        self.seed = 42
         self.nlab1 = nlab1  # label 1 can be number in Hanabi
         self.nlab2 = nlab2  # label 2 can be color in Hanabi
         self.hand_size = hand_size  # the number of cards held by a player
@@ -43,6 +38,9 @@ class Hp():
         self.shuffle_cards = shuffle_cards
         self.label1_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']
         self.label2_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
+
+    def __str__(self):
+        return 'hand_' + str(self.hand_size) + '_l1_' + str(self.nlab1) + '_l2_' + str(self.nlab2)
 
 
 hp_default = Hp()
