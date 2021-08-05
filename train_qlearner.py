@@ -84,6 +84,8 @@ def train_ff_agents(hp=hp_train, verbose=True):
             if i_episode > print_num and i_episode % print_num == 0:
                 print(datetime.datetime.now(), i_episode, np.array(rewards[-print_num:]).mean())
     print('Training complete')
+    p1.memory = None
+    p2.memory = None
     result = {'p1': p1, 'p2': p2}
     return result
 
