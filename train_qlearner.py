@@ -15,20 +15,20 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
 
-hp = Hp(hand_size=5,
-        nlab1=5,
-        nlab2=5,
-        shuffle_cards=False,
-        opt='adam',
-        nepsidoes=5000000,
-        batch_size=512,
-        eps_scheme={'eps_start': 0.95, 'eps_end': 0.05, 'eps_decay': 100000},
-        replay_capacity=100000,
-        update_frequency=100,
-        )
+hp_train = Hp(hand_size=5,
+              nlab1=2,
+              nlab2=2,
+              shuffle_cards=False,
+              opt='adam',
+              nepsidoes=1000000,
+              batch_size=512,
+              eps_scheme={'eps_start': 0.95, 'eps_end': 0.05, 'eps_decay': 100000},
+              replay_capacity=100000,
+              update_frequency=100,
+              )
 
 
-def obs_to_agent(obs, hp=hp):
+def obs_to_agent(obs, hp=hp_train):
     o1 = obs[:(1 + hp.hand_size) * (hp.nlab1 + hp.nlab2)]
     o2 = obs[(1 + hp.hand_size) * (hp.nlab1 + hp.nlab2):]
     hand1 = o1[:-(hp.nlab1 + hp.nlab2)]
@@ -38,7 +38,7 @@ def obs_to_agent(obs, hp=hp):
     return obs1, obs2
 
 
-def train_ff_agents(hp=hp, verbose=True):
+def train_ff_agents(hp=hp_train, verbose=True):
     num_episodes = hp.nepisodes
     env = TwoRoundHintGame(hp=hp)
     p1 = QLearner(1, env, policy_type='ff', hp=hp)
@@ -84,11 +84,11 @@ def train_ff_agents(hp=hp, verbose=True):
             if i_episode > print_num and i_episode % print_num == 0:
                 print(datetime.datetime.now(), i_episode, np.array(rewards[-print_num:]).mean())
     print('Training complete')
-    result = {'p1': p1, 'p2': p2, 'r': rewards}
+    result = {'p1': p1, 'p2': p2}
     return result
 
 
 if __name__ == '__main__':
     res = train_ff_agents()
-    with open(str(hp) + '_' + str(datetime.datetime.now()), 'wb') as handle:
+    with open(f'res/{str(hp_train)}/' + str(hp_train) + '_' + str(datetime.datetime.now()), 'wb') as handle:
         pickle.dump(res, handle)
