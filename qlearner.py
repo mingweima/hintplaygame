@@ -5,7 +5,7 @@ from collections import namedtuple, deque
 import torch
 import torch.nn as nn
 
-from hint_play_game import hp_default
+from hyperparams import hp_default
 
 # if gpu is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -51,21 +51,14 @@ class FeedForwardDNN(nn.Module):
         return self.model(x.float())
 
 
-BATCH_SIZE = 512
-EPS_START = 0.95
-EPS_END = 0.05
-EPS_DECAY = 25000
-TARGET_UPDATE = 10
-REPLAY_CAPACITY = 25000
-
-
 class QLearner:
     def __init__(self, player, env, policy_type='ff', hp=hp_default):
         self.player = player
         self.action_space_size = env.action_space.n
         self.obs_space_size = (1 + 2 * hp.hand_size) * (hp.nlab1 + hp.nlab2)
         self.steps_done = 0
-        self.memory = ReplayMemory(REPLAY_CAPACITY)
+        self.memory = ReplayMemory(hp.replay_capacity)
+        self.hp = hp
 
         if policy_type == 'ff':
             self.policy_net = FeedForwardDNN(self.obs_space_size, self.action_space_size)
@@ -80,8 +73,9 @@ class QLearner:
 
     def select_action(self, obs):
         sample = random.random()
-        eps_threshold = EPS_END + (EPS_START - EPS_END) * \
-                        math.exp(-1. * self.steps_done / EPS_DECAY)
+        eps_threshold = self.hp.eps_scheme['eps_end'] + (
+                    self.hp.eps_scheme['eps_start'] - self.hp.eps_scheme['eps_end']) * \
+                        math.exp(-1. * self.steps_done / self.hp.eps_scheme['eps_decay'])
         self.steps_done += 1
         if sample > eps_threshold:
             with torch.no_grad():
@@ -95,9 +89,9 @@ class QLearner:
             return torch.tensor([[random.randrange(self.action_space_size)]], device=device, dtype=torch.long)
 
     def optimize_model(self):
-        if len(self.memory) < BATCH_SIZE:
+        if len(self.memory) < self.hp.batch_size:
             return
-        transitions = self.memory.sample(BATCH_SIZE)
+        transitions = self.memory.sample(self.hp.batch_size)
         # Transpose the batch (see https://stackoverflow.com/a/19343/3343043 for
         # detailed explanation). This converts batch-array of Transitions
         # to Transition of batch-arrays.

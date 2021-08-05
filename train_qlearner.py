@@ -5,7 +5,8 @@ from collections import namedtuple
 import numpy as np
 import torch
 
-from hint_play_game import TwoRoundHintGame, Hp
+from hint_play_game import TwoRoundHintGame
+from hyperparams import Hp
 from qlearner import QLearner
 
 # if gpu is to be used
@@ -13,11 +14,17 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
-TARGET_UPDATE = 10
 
 hp = Hp(hand_size=5,
         nlab1=5,
         nlab2=5,
+        shuffle_cards=False,
+        opt='adam',
+        nepsidoes=5000000,
+        batch_size=512,
+        eps_scheme={'eps_start': 0.95, 'eps_end': 0.05, 'eps_decay': 100000},
+        replay_capacity=100000,
+        update_frequency=100,
         )
 
 
@@ -31,8 +38,8 @@ def obs_to_agent(obs, hp=hp):
     return obs1, obs2
 
 
-def train_ff_agents(hp=hp):
-    num_episodes = 1000000
+def train_ff_agents(hp=hp, verbose=True):
+    num_episodes = hp.nepisodes
     env = TwoRoundHintGame(hp=hp)
     p1 = QLearner(1, env, policy_type='ff', hp=hp)
     p2 = QLearner(1, env, policy_type='ff', hp=hp)
@@ -62,7 +69,7 @@ def train_ff_agents(hp=hp):
         p2.memory.push(obs2_a2, a2, None, r)
 
         # Perform one step of the optimization (on the policy network)
-        if i_episode % 100 == 0:
+        if i_episode % hp.update_frequency == 0:
             p1.optimize_model()
             p2.optimize_model()
 
@@ -72,9 +79,10 @@ def train_ff_agents(hp=hp):
         #     p2.target_net.load_state_dict(p2.policy_net.state_dict())
 
         rewards.append(r.numpy()[0])
-        print_num = 10000
-        if i_episode > print_num and i_episode % print_num == 0:
-            print(datetime.datetime.now(), i_episode, np.array(rewards[-print_num:]).mean())
+        print_num = num_episodes // 50
+        if verbose:
+            if i_episode > print_num and i_episode % print_num == 0:
+                print(datetime.datetime.now(), i_episode, np.array(rewards[-print_num:]).mean())
     print('Training complete')
     result = {'p1': p1, 'p2': p2, 'r': rewards}
     return result

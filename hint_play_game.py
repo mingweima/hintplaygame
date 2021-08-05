@@ -7,6 +7,8 @@ import numpy as np
 import torch
 from gym import spaces
 
+from hyperparams import hp_default
+
 # torch.cuda.is_available() checks and returns a Boolean True if a GPU is available, else it'll return False
 is_cuda = torch.cuda.is_available()
 
@@ -18,32 +20,6 @@ if is_cuda:
 else:
     device = torch.device("cpu")
     print("GPU not available, CPU used")
-
-
-class Hp():
-    def __init__(self,
-                 opt='adam',
-                 hand_size=5,
-                 nlab1=5,
-                 nlab2=5,
-                 shuffle_cards=False,
-                 epsilon=.1):
-        self.lr_sgd = 0.5
-        self.lr_adam = 0.001
-        self.opt = opt
-        self.nlab1 = nlab1  # label 1 can be number in Hanabi
-        self.nlab2 = nlab2  # label 2 can be color in Hanabi
-        self.hand_size = hand_size  # the number of cards held by a player
-        self.epsilon = epsilon
-        self.shuffle_cards = shuffle_cards
-        self.label1_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']
-        self.label2_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
-
-    def __str__(self):
-        return 'hand_' + str(self.hand_size) + '_l1_' + str(self.nlab1) + '_l2_' + str(self.nlab2)
-
-
-hp_default = Hp()
 
 
 def card_token_to_symbol(card_token, hp=hp_default):
