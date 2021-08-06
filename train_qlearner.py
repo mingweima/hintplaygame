@@ -148,5 +148,5 @@ def train_att_agents(hp=hp_train, verbose=True):
 
 if __name__ == '__main__':
     res = train_att_agents()
-    with open(f'res/att_{str(hp_train)}/' + str(hp_train) + '_' + str(datetime.datetime.now()), 'wb') as handle:
+    with open(f'res/att_{str(hp_train)}/' + str(hp_train) + '_' + str(datetime.datetime.now()) + ".pkl", 'wb') as handle:
         pickle.dump(res, handle)
