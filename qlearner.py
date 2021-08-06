@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 
 from hyperparams import hp_default
+from attention import AttentionModel
 
 # if gpu is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -59,9 +60,15 @@ class QLearner:
         self.steps_done = 0
         self.memory = ReplayMemory(hp.replay_capacity)
         self.hp = hp
+        self.policy_type = policy_type
 
         if policy_type == 'ff':
             self.policy_net = FeedForwardDNN(self.obs_space_size, self.action_space_size)
+            self.policy_net.to(device)
+        elif policy_type == 'attention':
+            num_cards = 1 + 2 * self.hp.hand_size
+            card_dim = hp.nlab1 + hp.nlab2
+            self.policy_net = AttentionModel(num_cards, card_dim, self.action_space_size)
             self.policy_net.to(device)
         else:
             raise ValueError('Policy type unknown!')
@@ -84,6 +91,8 @@ class QLearner:
                 # found, so we pick action with the larger expected reward.
                 a = self.policy_net(obs)
                 # return self.policy_net(obs).unsqueeze(0).max(1)[1].view(1, 1)
+                #if self.policy_type == 'attention':
+                #    return self.policy_net(obs).max()
                 return self.policy_net(obs).max(1)[1].view(1, 1)
         else:
             return torch.tensor([[random.randrange(self.action_space_size)]], device=device, dtype=torch.long)
@@ -116,6 +125,9 @@ class QLearner:
         # Optimize the model
         self.optimizer.zero_grad()
         loss.backward()
+        if self.policy_type == 'attention':
+            self.optimizer.step()
+            return 
         for param in self.policy_net.parameters():
             param.grad.data.clamp_(-1, 1)
         self.optimizer.step()
