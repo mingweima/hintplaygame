@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 
 from hyperparams import hp_default
-from attention import AttentionModel
+from attention import AttentionModel, AttentionModel2
 
 # if gpu is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -70,6 +70,11 @@ class QLearner:
             card_dim = hp.nlab1 + hp.nlab2
             self.policy_net = AttentionModel(num_cards, card_dim, self.action_space_size)
             self.policy_net.to(device)
+        elif policy_type == 'attention2':
+            num_cards = 1 + 2 * self.hp.hand_size
+            card_dim = hp.nlab1 + hp.nlab2
+            self.policy_net = AttentionModel2(num_cards, card_dim, self.action_space_size)
+            self.policy_net.to(device)
         else:
             raise ValueError('Policy type unknown!')
 
@@ -125,7 +130,7 @@ class QLearner:
         # Optimize the model
         self.optimizer.zero_grad()
         loss.backward()
-        if self.policy_type == 'attention':
+        if self.policy_type == 'attention' or self.policy_type == 'attention2':
             self.optimizer.step()
             return 
         for param in self.policy_net.parameters():
