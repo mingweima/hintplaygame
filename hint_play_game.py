@@ -134,6 +134,7 @@ class TwoRoundHintGame(gym.Env, ABC):
         (self.o1, self.o2), self.info = get_initial_state(hp=self.hp)
         obs = np.array([self.o1.astype(float), self.o2.astype(float)]).flatten()
         self.info['final_reward'] = 0
+        self.done = False
         return obs, self.info
 
     def step(self, action):

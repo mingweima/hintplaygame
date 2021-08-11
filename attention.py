@@ -76,7 +76,7 @@ class AttentionModel2(nn.Module, ABC):
         self.linear_action = nn.Linear(input_size, input_size)
 
     def forward(self, input_tensor):
-        action_space = input_tensor[:,1:]
+        action_space = input_tensor[:,-1:]
         S = self.attn_head(torch.tensor(input_tensor))
         play_vector = self.linear(S)
         action_tensor = self.linear_action(torch.tensor(action_space).T.float())
