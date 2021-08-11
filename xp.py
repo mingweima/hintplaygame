@@ -88,6 +88,8 @@ def sp_test(agent_path, model='ff', verb=False):
         for idx2, p2 in enumerate(agent2s):
             if model == 'ff':
                 score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb)
+            elif model == 'lat':
+                score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb)
             elif model == 'att':
                 score_dict[idx1][idx2] = sample_games_att(p1, p2, episodes=1000, verbose=verb)
             print(idx1, idx2, )
