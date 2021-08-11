@@ -71,15 +71,17 @@ class AttentionModel(nn.Module, ABC):
 class AttentionModel2(nn.Module, ABC):
     def __init__(self, dim_seq, input_size, output_size, n_hid=128):
         super().__init__()
+        self.hands = int((dim_seq-1)/2)
         self.attn_head = Attention(dim_seq, input_size)
         self.linear = nn.Linear(dim_seq, 1)
         self.linear_action = nn.Linear(input_size, input_size)
 
     def forward(self, input_tensor):
-        action_space = input_tensor[:,-1:]
-        S = self.attn_head(torch.tensor(input_tensor))
+        action_space = input_tensor[:,:,self.hands:-1]
+        S = self.attn_head(input_tensor.clone().detach().requires_grad_(True))
         play_vector = self.linear(S)
-        action_tensor = self.linear_action(torch.tensor(action_space).T.float())
-        values = torch.matmul(action_tensor, play_vector)
+        action_tensor = self.linear_action(action_space.transpose(1,2).float())
+        values = torch.matmul(action_tensor, play_vector).squeeze(2)
+        #print(action_tensor.shape, play_vector.shape, values.squeeze(2).shape)
         return values
 
