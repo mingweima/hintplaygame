@@ -33,8 +33,18 @@ def obs_to_agent(obs, hp=hp_train):
     o2 = obs[(1 + hp.hand_size) * (hp.nlab1 + hp.nlab2):]
     hand1 = o1[:-(hp.nlab1 + hp.nlab2)]
     hand2 = o2[:-(hp.nlab1 + hp.nlab2)]
-    obs1 = np.concatenate([o1, hand2]).flatten()
-    obs2 = np.concatenate([o2, hand1]).flatten()
+    # shuffle hands
+    """
+    hand1_permute = hand1.reshape(-1, hp.nlab1 + hp.nlab2)
+    np.random.shuffle(hand1_permute)
+    hand1 = hand1_permute.flatten()
+    hand2_permute = hand2.reshape(-1, hp.nlab1 + hp.nlab2)
+    np.random.shuffle(hand2_permute)
+    hand2 = hand2_permute.flatten()
+    """
+    
+    obs1 = np.concatenate([hand2, o1]).flatten()
+    obs2 = np.concatenate([hand1, o2]).flatten()
     return obs1, obs2
 
 
@@ -208,8 +218,8 @@ def train_att_agents(hp=hp_train, verbose=True):
 def train_att2_agents(hp=hp_train, verbose=True):
     num_episodes = hp.nepisodes
     env = TwoRoundHintGame(hp=hp)
-    p1 = QLearner(1, env, policy_type='attention', hp=hp)
-    p2 = QLearner(1, env, policy_type='attention', hp=hp)
+    p1 = QLearner(1, env, policy_type='attention2', hp=hp)
+    p2 = QLearner(1, env, policy_type='attention2', hp=hp)
 
     rewards = []
 
@@ -261,8 +271,9 @@ def train_att2_agents(hp=hp_train, verbose=True):
     return result
 
 
+
 if __name__ == '__main__':
-    res = train_lat_agents()
-    with open(f'res/lat_{str(hp_train)}/' + str(hp_train) + '_' + str(datetime.datetime.now()) + ".pkl",
-              'wb') as handle:
-        pickle.dump(res, handle)
+    for i in range(10):
+        res = train_att2_agents()
+        with open('res/att2/' + str(hp_train) + '_' + str(datetime.datetime.now()) + ".pkl", 'wb') as handle:
+            pickle.dump(res, handle)
