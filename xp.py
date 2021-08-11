@@ -106,12 +106,14 @@ def sample_xp_games(agent_path, model='ff', verb=False):
     for idx1, p1 in enumerate(agent1s):
         score_dict[idx1] = {}
         for idx2, p2 in enumerate(agent2s):
-            if idx1 != idx2:
-                print(idx1, idx2, )
-                if model == 'ff':
-                    score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb)
-                elif model == 'att':
-                    score_dict[idx1][idx2] = sample_games_att(p1, p2, episodes=1000, verbose=verb)
+            # if idx1 != idx2:
+            print(idx1, idx2, )
+            if model == 'ff':
+                score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb)
+            if model == 'lat':
+                score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb)
+            elif model == 'att':
+                score_dict[idx1][idx2] = sample_games_att(p1, p2, episodes=1000, verbose=verb)
     return DataFrame(score_dict)
 
 
@@ -121,7 +123,12 @@ if __name__ == "__main__":
     # print(score_df)
     # score_df.to_csv('xp_att.csv')
 
+    # print('test start')
+    # score_df = sp_test('res/Archive2', model='att', verb=True)
+    # print(score_df)
+    # # score_df.to_csv('xp_att2.csv')
+
     print('test start')
-    score_df = sp_test('res/Archive2', model='att', verb=True)
+    score_df = sample_xp_games('res/lat_hand_5_l1_2_l2_2', model='lat', verb=False)
     print(score_df)
-    # score_df.to_csv('xp_att2.csv')
+    score_df.to_csv('xp_lat.csv')
