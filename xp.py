@@ -92,7 +92,7 @@ def sp_test(agent_path, model='ff', verb=False):
                 score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb)
             elif model == 'att':
                 score_dict[idx1][idx2] = sample_games_att(p1, p2, episodes=1000, verbose=verb)
-            print(idx1, idx2, )
+            
     return DataFrame(score_dict)
 
 
@@ -131,6 +131,7 @@ if __name__ == "__main__":
     # # score_df.to_csv('xp_att2.csv')
 
     print('test start')
-    score_df = sample_xp_games('res/lat_hand_5_l1_2_l2_2', model='lat', verb=False)
+    score_df = sp_test('res/att2', model='att', verb=True)
     print(score_df)
-    score_df.to_csv('xp_lat.csv')
+    #score_df.to_csv('xp_att.csv')
+
