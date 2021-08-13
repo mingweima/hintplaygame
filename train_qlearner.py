@@ -16,14 +16,14 @@ Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
 
 hp_train = Hp(hand_size=5,
-              nlab1=2,
-              nlab2=2,
+              nlab1=3,
+              nlab2=3,
               shuffle_cards=False,
               opt='adam',
-              nepsidoes=1000000,
+              nepsidoes=1500000,
               batch_size=512,
-              eps_scheme={'eps_start': 0.95, 'eps_end': 0.05, 'eps_decay': 100000},
-              replay_capacity=100000,
+              eps_scheme={'eps_start': 0.95, 'eps_end': 0.05, 'eps_decay': 150000},
+              replay_capacity=250000,
               update_frequency=100,
               )
 
@@ -42,7 +42,7 @@ def obs_to_agent(obs, hp=hp_train):
     np.random.shuffle(hand2_permute)
     hand2 = hand2_permute.flatten()
     """
-    
+
     obs1 = np.concatenate([hand2, o1]).flatten()
     obs2 = np.concatenate([hand1, o2]).flatten()
     return obs1, obs2
@@ -271,9 +271,9 @@ def train_att2_agents(hp=hp_train, verbose=True):
     return result
 
 
-
 if __name__ == '__main__':
     for i in range(10):
-        res = train_att2_agents()
-        with open('res/att2/' + str(hp_train) + '_' + str(datetime.datetime.now()) + ".pkl", 'wb') as handle:
+        res = train_ff_agents()
+        with open('res/ff_hand_5_l1_3_l2_3/' + str(hp_train) + '_' + str(datetime.datetime.now()) + ".pkl",
+                  'wb') as handle:
             pickle.dump(res, handle)
