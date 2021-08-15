@@ -27,15 +27,19 @@ def card_token_to_symbol(card_token, hp=hp_default):
     lab2_ind = np.where(card_token.flatten() == 1)[0][1]
     lab1 = hp.label1_list[lab1_ind]
     lab2 = hp.label2_list[lab2_ind - hp.nlab1]
-    return lab1 + '_' + lab2
+    return lab1 + lab2
 
 
-def hand_to_symbol(hand, hp=hp_default):
+def hand_to_symbol(hand, hp=hp_default, highlight=None):
     symbols = []
     for card_ind in range(hp.hand_size):
-        symbols.append(card_token_to_symbol(
-            hand[card_ind * (hp.nlab1 + hp.nlab2):card_ind * (hp.nlab1 + hp.nlab2) + hp.nlab1 + hp.nlab2],
-            hp=hp))
+        card = hand[card_ind * (hp.nlab1 + hp.nlab2):card_ind * (hp.nlab1 + hp.nlab2) + hp.nlab1 + hp.nlab2]
+        if highlight is not None and (card == highlight).all():
+            symbols.append("\u0332".join(card_token_to_symbol(card, hp=hp)))
+        else:
+            symbols.append(card_token_to_symbol(
+                card,
+                hp=hp))
     return symbols
 
 
@@ -147,11 +151,13 @@ class TwoRoundHintGame(gym.Env, ABC):
             self.o2 = apply_hint(action, self.o1, self.o2, hp=self.hp)
             r = 0
             self.step_count += 1
+            self.info['hint_card_number'] = action
         elif self.step_count == 1:
             r = apply_play_card(action, self.o1, self.o2, hp=self.hp)
             card_played = select_card(self.o2[:-(self.hp.nlab1 + self.hp.nlab2)], action,
                                       hp=self.hp)  # convert card index to token
             self.info['card_played'] = card_played
+            self.info['played_card_number'] = action
             self.done = True
         else:
             raise ValueError(f'Step size is {self.step_count} > 1!')
@@ -161,20 +167,23 @@ class TwoRoundHintGame(gym.Env, ABC):
         return obs, reward, self.done, self.info
 
     def render(self, **kwargs):
+        # Underline all cards the same as the playable card
         if self.step_count == 0:
             hand1 = self.o1[:-(self.hp.nlab1 + self.hp.nlab2)]
             hand2 = self.o2[:-(self.hp.nlab1 + self.hp.nlab2)]
             playable_card = self.o1[-(self.hp.nlab1 + self.hp.nlab2):]
             print(
                 f'===== Game starts with handsize: {self.hp.hand_size}, nlabl: {self.hp.nlab1}, nlab2: {self.hp.nlab2} =====')
-            print(f'Agent 1 hand is: {hand_to_symbol(hand1, hp=self.hp)}')
-            print(f'Agent 2 hand is: {hand_to_symbol(hand2, hp=self.hp)}')
             print(f'Playable hand is: {card_token_to_symbol(playable_card, hp=self.hp)}')
+            print(f'Agent 1 hand is: {hand_to_symbol(hand1, hp=self.hp, highlight=playable_card)}')
+            print(f'Agent 2 hand is: {hand_to_symbol(hand2, hp=self.hp, highlight=playable_card)}')
         if self.step_count == 1 and not self.done:
             card_hinted = self.o2[-(self.hp.nlab1 + self.hp.nlab2):]
-            print(f'Agent 1 hints {card_token_to_symbol(card_hinted, hp=self.hp)}')
+            print(f'Agent 1 hints {card_token_to_symbol(card_hinted, hp=self.hp)} @ ',
+                  self.info['hint_card_number'].numpy()[0][0])
         if self.done:
             card_played = self.info['card_played']
-            print(f'Agent 2 plays {card_token_to_symbol(card_played, hp=self.hp)}')
+            print(f'Agent 2 plays {card_token_to_symbol(card_played, hp=self.hp)} @ ',
+                  self.info['played_card_number'].numpy()[0][0])
             print(f'Final reward of game: {self.info["final_reward"]}')
             print('\n')

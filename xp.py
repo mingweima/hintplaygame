@@ -136,3 +136,17 @@ if __name__ == "__main__":
     print(score_df)
     #score_df.to_csv('xp_att3.csv')
 
+    # print('test start')
+    # score_df = sp_test('res/att2', model='att', verb=True)
+    # print(score_df)
+    #score_df.to_csv('xp_att.csv')
+    #agent1s = []
+    #agent2s = []
+    #for filename in glob.glob(os.path.join("res/ff_hand_5_l1_3_l2_3", "*.pkl")):
+    #    with open(filename, "rb") as f:
+    #        res = pickle.load(f)
+    #        agent1s += [res['p1']]
+    #        agent2s += [res['p2']]
+    #print(sample_games_ff(agent1s[1], agent2s[1], episodes=10, verbose=True))
+
+
