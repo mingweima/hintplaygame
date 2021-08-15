@@ -85,3 +85,24 @@ class AttentionModel2(nn.Module, ABC):
         #print(action_tensor.shape, play_vector.shape, values.squeeze(2).shape)
         return values
 
+
+class AttentionModel3(nn.Module, ABC):
+    def __init__(self, dim_seq, input_size, output_size, n_hid=128):
+        super().__init__()
+        self.hands = int((dim_seq-1)/2)
+        self.attn_head = Attention(dim_seq+1, input_size)
+        self.linear = nn.Linear((dim_seq+1)*input_size, 1)
+        
+    def forward(self, input_tensor):
+        action_space = input_tensor[:,:,self.hands:-1]
+        qvals = []
+        for i in range(self.hands):
+            action_tensor = action_space[:,:,i].unsqueeze(2)
+            input_cat = torch.cat((input_tensor.clone().detach().requires_grad_(True), 
+                   action_tensor.clone().detach().requires_grad_(True)), 2)
+            S = self.attn_head(input_cat)
+            X = torch.flatten(S, start_dim=-2).float()
+            qval = self.linear(X)
+            qvals.append(qval)
+        ret = torch.cat(qvals, 1)
+        return ret

@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 
 from hyperparams import hp_default
-from attention import AttentionModel, AttentionModel2
+from attention import AttentionModel, AttentionModel2, AttentionModel3
 
 # if gpu is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -75,6 +75,11 @@ class QLearner:
             card_dim = hp.nlab1 + hp.nlab2
             self.policy_net = AttentionModel2(num_cards, card_dim, self.action_space_size)
             self.policy_net.to(device)
+        elif policy_type == 'attention3':
+            num_cards = 1 + 2 * self.hp.hand_size
+            card_dim = hp.nlab1 + hp.nlab2
+            self.policy_net = AttentionModel3(num_cards, card_dim, self.action_space_size)
+            self.policy_net.to(device)
         else:
             raise ValueError('Policy type unknown!')
 
@@ -94,10 +99,8 @@ class QLearner:
                 # t.max(1) will return largest column value of each row.
                 # second column on max result is index of where max element was
                 # found, so we pick action with the larger expected reward.
-                a = self.policy_net(obs)
+                # a = self.policy_net(obs)
                 # return self.policy_net(obs).unsqueeze(0).max(1)[1].view(1, 1)
-                #if self.policy_type == 'attention':
-                #    return self.policy_net(obs).max()
                 return self.policy_net(obs).max(1)[1].view(1, 1)
         else:
             return torch.tensor([[random.randrange(self.action_space_size)]], device=device, dtype=torch.long)
@@ -130,7 +133,7 @@ class QLearner:
         # Optimize the model
         self.optimizer.zero_grad()
         loss.backward()
-        if self.policy_type == 'attention' or self.policy_type == 'attention2':
+        if self.policy_type == 'attention' or self.policy_type == 'attention2' or self.policy_type == 'attention3':
             self.optimizer.step()
             return 
         for param in self.policy_net.parameters():
