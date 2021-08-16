@@ -20,10 +20,10 @@ hp_train = Hp(hand_size=5,
               nlab2=3,
               shuffle_cards=False,
               opt='adam',
-              nepsidoes=1500000,
+              nepsidoes=2000000,
               batch_size=512,
-              eps_scheme={'eps_start': 0.95, 'eps_end': 0.05, 'eps_decay': 150000},
-              replay_capacity=250000,
+              eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 100000},
+              replay_capacity=300000,
               update_frequency=100,
               )
 
@@ -328,6 +328,6 @@ def train_att3_agents(hp=hp_train, verbose=True):
 
 
 if __name__ == '__main__':
-    for i in range(10):
-        res = train_att3_agents()
-        with open('res/att3/' + str(hp_train) + '_' + str(datetime.datetime.now()) + ".pkl", 'wb') as handle:
+    res = train_att3_agents()
+    with open('res/att3/' + str(hp_train) + '_' + str(datetime.datetime.now()) + ".pkl", 'wb') as handle:
+        pickle.dump(res, handle, protocol=pickle.HIGHEST_PROTOCOL)
