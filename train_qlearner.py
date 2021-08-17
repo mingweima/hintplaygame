@@ -331,3 +331,4 @@ if __name__ == '__main__':
     for i in range(10):
         res = train_att3_agents()
         with open('res/att3/' + str(hp_train) + '_' + str(datetime.datetime.now()) + ".pkl", 'wb') as handle:
+            pickle.dump(res, handle)

@@ -132,9 +132,9 @@ if __name__ == "__main__":
     # # score_df.to_csv('xp_att2.csv')
 
     print('test start')
-    score_df = sp_test('res/att3', model='att', verb=True)
+    score_df = sp_test('res/att3', model='att', verb=False)
     print(score_df)
-    #score_df.to_csv('xp_att3.csv')
+    score_df.to_csv('xp_att3.csv')
 
     # print('test start')
     # score_df = sp_test('res/att2', model='att', verb=True)
