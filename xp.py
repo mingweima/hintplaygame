@@ -97,7 +97,7 @@ def sp_test(agent_path, model='ff', verb=False):
     return DataFrame(score_dict)
 
 
-def sample_xp_games(agent_path, model='ff', verb=False):
+def xp_test(agent_path, model='ff', verb=False):
     agent1s = []
     agent2s = []
     for filename in glob.glob(os.path.join(agent_path, "*.pkl")):
@@ -110,13 +110,13 @@ def sample_xp_games(agent_path, model='ff', verb=False):
         score_dict[idx1] = {}
         for idx2, p2 in enumerate(agent2s):
             # if idx1 != idx2:
-            print(idx1, idx2, )
             if model == 'ff':
                 score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb)
             if model == 'lat':
                 score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb)
             elif model == 'att':
                 score_dict[idx1][idx2] = sample_games_att(p1, p2, episodes=1000, verbose=verb)
+            print(idx1, idx2, score_dict[idx1][idx2])
     return DataFrame(score_dict)
 
 
@@ -132,22 +132,22 @@ if __name__ == "__main__":
     # # score_df.to_csv('xp_att2.csv')
 
     # print('test start')
-    # score_df = sp_test('res/att3', model='att', verb=True)
+    # score_df = sp_test('res/att3', model='att', verb=False)
     # print(score_df)
-    # #score_df.to_csv('xp_att3.csv')
+    # score_df.to_csv('xp_att3.csv')
 
-    # print('test start')
-    # score_df = sp_test('res/att2', model='att', verb=True)
-    # print(score_df)
-    #score_df.to_csv('xp_att.csv')
+    print('test start')
+    score_df = xp_test('res/att3', model='att', verb=False)
+    print(score_df)
+    score_df.to_csv('xp_att3.csv')
 
-    agent1s = []
-    agent2s = []
-    for filename in glob.glob(os.path.join("res/att3", "*.pkl")):
-       with open(filename, "rb") as f:
-           res = pickle.load(f)
-           agent1s += [res['p1']]
-           agent2s += [res['p2']]
-    print(sample_games_att(agent1s[1], agent2s[1], episodes=10, verbose=True))
+    # agent1s = []
+    # agent2s = []
+    # for filename in glob.glob(os.path.join("res/att3", "*.pkl")):
+    #    with open(filename, "rb") as f:
+    #        res = pickle.load(f)
+    #        agent1s += [res['p1']]
+    #        agent2s += [res['p2']]
+    # print(sample_games_att(agent1s[0], agent2s[12], episodes=20, verbose=True))
 
-
+    #

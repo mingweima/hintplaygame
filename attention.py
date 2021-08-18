@@ -90,7 +90,7 @@ class AttentionModel2(nn.Module, ABC):
 
 
 class AttentionModel3(nn.Module, ABC):
-    def __init__(self, dim_seq, input_size, output_size, n_hid=128):
+    def __init__(self, dim_seq, input_size):
         super().__init__()
         self.hands = int((dim_seq - 1) / 2)
         self.attn_head = Attention(dim_seq + 1, input_size)

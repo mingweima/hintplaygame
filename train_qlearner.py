@@ -14,18 +14,31 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
-
+# Att training params
 hp_train = Hp(hand_size=5,
               nlab1=3,
               nlab2=3,
               shuffle_cards=False,
               opt='adam',
-              nepsidoes=2000000,
+              nepsidoes=500000,
               batch_size=512,
-              eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 100000},
-              replay_capacity=300000,
+              eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
+              replay_capacity=200000,
               update_frequency=100,
               )
+
+# FF training params
+# hp_train = Hp(hand_size=5,
+#               nlab1=3,
+#               nlab2=3,
+#               shuffle_cards=False,
+#               opt='adam',
+#               nepsidoes=2000000,
+#               batch_size=512,
+#               eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
+#               replay_capacity=200000,
+#               update_frequency=100,
+#               )
 
 
 def obs_to_agent(obs, hp=hp_train):

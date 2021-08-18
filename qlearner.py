@@ -78,7 +78,7 @@ class QLearner:
         elif policy_type == 'attention3':
             num_cards = 1 + 2 * self.hp.hand_size
             card_dim = hp.nlab1 + hp.nlab2
-            self.policy_net = AttentionModel3(num_cards, card_dim, self.action_space_size)
+            self.policy_net = AttentionModel3(num_cards, card_dim)
             self.policy_net.to(device)
         else:
             raise ValueError('Policy type unknown!')
