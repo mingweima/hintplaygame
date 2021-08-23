@@ -1,6 +1,7 @@
 import datetime
 import pickle
 from collections import namedtuple
+import os
 
 import numpy as np
 import torch
@@ -14,31 +15,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
-# Att training params
-hp_train = Hp(hand_size=5,
-              nlab1=3,
-              nlab2=3,
-              shuffle_cards=False,
-              opt='adam',
-              nepsidoes=500000,
-              batch_size=512,
-              eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
-              replay_capacity=200000,
-              update_frequency=100,
-              )
-
-# FF training params
-# hp_train = Hp(hand_size=5,
-#               nlab1=3,
-#               nlab2=3,
-#               shuffle_cards=False,
-#               opt='adam',
-#               nepsidoes=2000000,
-#               batch_size=512,
-#               eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
-#               replay_capacity=200000,
-#               update_frequency=100,
-#               )
 
 
 def obs_to_agent(obs, hp=hp_train):
@@ -101,8 +77,8 @@ def train_ff_agents(hp=hp_train, verbose=True):
         #     p1.target_net.load_state_dict(p1.policy_net.state_dict())
         #     p2.target_net.load_state_dict(p2.policy_net.state_dict())
 
-        rewards.append(r.numpy()[0])
-        print_num = num_episodes // 50
+        rewards.append(r.cpu().numpy()[0])
+        print_num = num_episodes // 100
         if verbose:
             if i_episode > print_num and i_episode % print_num == 0:
                 print(datetime.datetime.now(), i_episode, np.array(rewards[-print_num:]).mean())
@@ -158,9 +134,9 @@ def train_lat_agents(hp=hp_train, verbose=True, lat_lambda=0.5):
         #     p1.target_net.load_state_dict(p1.policy_net.state_dict())
         #     p2.target_net.load_state_dict(p2.policy_net.state_dict())
 
-        rewards.append(r.numpy()[0])
+        rewards.append(r.cpu().numpy()[0])
         ips.append(lat_inner_prod.numpy()[0])
-        print_num = num_episodes // 50
+        print_num = num_episodes // 100
         if verbose:
             if i_episode > print_num and i_episode % print_num == 0:
                 print(datetime.datetime.now(), i_episode, np.array(rewards[-print_num:]).mean(),
@@ -216,8 +192,8 @@ def train_att_agents(hp=hp_train, verbose=True):
         #     p1.target_net.load_state_dict(p1.policy_net.state_dict())
         #     p2.target_net.load_state_dict(p2.policy_net.state_dict())
 
-        rewards.append(r.numpy()[0])
-        print_num = num_episodes // 50
+        rewards.append(r.cpu().numpy()[0])
+        print_num = num_episodes // 100
         if verbose:
             if i_episode > print_num and i_episode % print_num == 0:
                 print(datetime.datetime.now(), i_episode, np.array(rewards[-print_num:]).mean())
@@ -272,8 +248,8 @@ def train_att2_agents(hp=hp_train, verbose=True):
         #     p1.target_net.load_state_dict(p1.policy_net.state_dict())
         #     p2.target_net.load_state_dict(p2.policy_net.state_dict())
 
-        rewards.append(r.numpy()[0])
-        print_num = num_episodes // 50
+        rewards.append(r.cpu().numpy()[0])
+        print_num = num_episodes // 100
         if verbose:
             if i_episode > print_num and i_episode % print_num == 0:
                 print(datetime.datetime.now(), i_episode, np.array(rewards[-print_num:]).mean())
@@ -328,8 +304,8 @@ def train_att3_agents(hp=hp_train, verbose=True):
         #     p1.target_net.load_state_dict(p1.policy_net.state_dict())
         #     p2.target_net.load_state_dict(p2.policy_net.state_dict())
 
-        rewards.append(r.numpy()[0])
-        print_num = num_episodes // 50
+        rewards.append(r.cpu().numpy()[0])
+        print_num = num_episodes // 100
         if verbose:
             if i_episode > print_num and i_episode % print_num == 0:
                 print(datetime.datetime.now(), i_episode, np.array(rewards[-print_num:]).mean())
@@ -341,6 +317,37 @@ def train_att3_agents(hp=hp_train, verbose=True):
 
 
 if __name__ == '__main__':
-    res = train_att3_agents()
-    with open('res/att3/' + str(hp_train) + '_' + str(datetime.datetime.now()) + ".pkl", 'wb') as handle:
+    # Att training params
+    hp_train = Hp(hand_size=5,
+                  nlab1=4,
+                  nlab2=4,
+                  shuffle_cards=False,
+                  opt='adam',
+                  nepsidoes=500000,
+                  batch_size=512,
+                  eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
+                  replay_capacity=200000,
+                  update_frequency=100,
+                  )
+
+    # FF training params
+    # hp_train = Hp(hand_size=5,
+    #               nlab1=3,
+    #               nlab2=3,
+    #               shuffle_cards=False,
+    #               opt='adam',
+    #               nepsidoes=2000000,
+    #               batch_size=512,
+    #               eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
+    #               replay_capacity=200000,
+    #               update_frequency=100,
+    #               )
+    
+    save_dir = f'res/{hp_train}'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    hp_train.log(res_path=save_dir)
+    res = train_att3_agents(hp=hp_train)
+    
+    with open('res/att3_lab4/' + str(hp_train) + '_' + str(datetime.datetime.now()) + ".pkl", 'wb') as handle:
         pickle.dump(res, handle, protocol=pickle.HIGHEST_PROTOCOL)
