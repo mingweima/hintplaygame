@@ -1,7 +1,7 @@
 import datetime
+import os
 import pickle
 from collections import namedtuple
-import os
 
 import numpy as np
 import torch
@@ -15,6 +15,18 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
+
+hp_train = Hp(hand_size=5,
+              nlab1=4,
+              nlab2=4,
+              shuffle_cards=False,
+              opt='adam',
+              nepsidoes=500000,
+              batch_size=512,
+              eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
+              replay_capacity=200000,
+              update_frequency=100,
+              )
 
 
 def obs_to_agent(obs, hp=hp_train):
@@ -322,8 +334,9 @@ if __name__ == '__main__':
                   nlab1=4,
                   nlab2=4,
                   shuffle_cards=False,
+                  agent_type='Att3',
                   opt='adam',
-                  nepsidoes=500000,
+                  nepsidoes=5000,
                   batch_size=512,
                   eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
                   replay_capacity=200000,
@@ -342,12 +355,12 @@ if __name__ == '__main__':
     #               replay_capacity=200000,
     #               update_frequency=100,
     #               )
-    
+
     save_dir = f'res/{hp_train}'
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
     hp_train.log(res_path=save_dir)
     res = train_att3_agents(hp=hp_train)
-    
-    with open('res/att3_lab4/' + str(hp_train) + '_' + str(datetime.datetime.now()) + ".pkl", 'wb') as handle:
+
+    with open((os.path.join(save_dir, str(datetime.datetime.now()) + ".pkl")), 'wb') as handle:
         pickle.dump(res, handle, protocol=pickle.HIGHEST_PROTOCOL)

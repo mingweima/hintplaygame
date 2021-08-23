@@ -1,9 +1,13 @@
+import os
+
+
 class Hp:
     def __init__(self,
                  hand_size=5,
                  nlab1=5,
                  nlab2=5,
                  shuffle_cards=False,
+                 agent_type='Att3',
                  opt='adam',
                  nepsidoes=1000000,
                  batch_size=512,
@@ -18,6 +22,7 @@ class Hp:
         self.label1_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']
         self.label2_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
 
+        self.agent_type=agent_type
         self.nepisodes = nepsidoes
         self.batch_size = batch_size
         self.eps_scheme = eps_scheme
@@ -28,10 +33,11 @@ class Hp:
         self.lr_adam = 0.001
 
     def __str__(self):
-        return 'hand_' + str(self.hand_size) + '_l1_' + str(self.nlab1) + '_l2_' + str(self.nlab2)
+        return str(self.agent_type) + '_hand_' + str(self.hand_size) + '_l1_' + str(self.nlab1) + '_l2_' + str(self.nlab2)
     
     def log(self, res_path=''):
-        with open(os.path.join(THIS_FOLDER, 'hp.txt'), "w")  as file:
+        with open(os.path.join(res_path, 'hp.txt'), "w") as file:
+            file.write(f"agent_type {self.agent_type} \n")
             file.write(f"nlab 1 {self.nlab1} \n")
             file.write(f"nlab 2 {self.nlab2} \n")
             file.write(f"hand_size {self.hand_size} \n")
