@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import os
 import pickle
@@ -329,18 +330,32 @@ def train_att3_agents(hp=hp_train, verbose=True):
 
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--hand_size', type=int, default=5)
+    parser.add_argument('--nlab1', type=int, default=3)
+    parser.add_argument('--nlab2', type=int, default=3)
+    parser.add_argument('--shuffle_cards', type=bool, default=False)
+    parser.add_argument('--agent_type', type=str, default='Att3')
+    parser.add_argument('--nepsidoes', type=int, default=500000)
+    parser.add_argument('--batch_size', type=int, default=512)
+    parser.add_argument('--replay_capacity', type=int, default=200000)
+    parser.add_argument('--update_frequency', type=int, default=100)
+
+    args = parser.parse_args()
+
     # Att training params
-    hp_train = Hp(hand_size=5,
-                  nlab1=4,
-                  nlab2=4,
-                  shuffle_cards=False,
-                  agent_type='Att3',
+    hp_train = Hp(hand_size=args.hand_size,
+                  nlab1=args.nlab1,
+                  nlab2=args.nlab2,
+                  shuffle_cards=args.shuffle_cards,
+                  agent_type=args.agent_type,
                   opt='adam',
-                  nepsidoes=5000,
-                  batch_size=512,
+                  nepsidoes=args.nepsidoes,
+                  batch_size=args.batch_size,
                   eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
-                  replay_capacity=200000,
-                  update_frequency=100,
+                  replay_capacity=args.replay_capacity,
+                  update_frequency=args.update_frequency,
                   )
 
     # FF training params
@@ -360,7 +375,17 @@ if __name__ == '__main__':
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     hp_train.log(res_path=save_dir)
-    res = train_att3_agents(hp=hp_train)
+
+    if args.agent_type == 'Att3':
+        res = train_att3_agents(hp=hp_train)
+    elif args.agent_type == 'Att2':
+        res = train_att2_agents(hp=hp_train)
+    elif args.agent_type == 'Att1':
+        res = train_att_agents(hp=hp_train)
+    elif args.agent_type == 'FF':
+        res = train_ff_agents(hp=hp_train)
+    else:
+        raise ValueError("Agent not found in base!")
 
     with open((os.path.join(save_dir, str(datetime.datetime.now()) + ".pkl")), 'wb') as handle:
         pickle.dump(res, handle, protocol=pickle.HIGHEST_PROTOCOL)
