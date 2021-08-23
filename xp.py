@@ -93,7 +93,7 @@ def sp_test(agent_path, model='ff', verb=False):
                 score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb)
             elif model == 'att':
                 score_dict[idx1][idx2] = sample_games_att(p1, p2, episodes=1000, verbose=verb)
-            
+
     return DataFrame(score_dict)
 
 
@@ -131,23 +131,22 @@ if __name__ == "__main__":
     # print(score_df)
     # # score_df.to_csv('xp_att2.csv')
 
+    #print('test start')
+    #score_df = sp_test('res/att3', model='att', verb=False)
+    #print(score_df)
+    #score_df.to_csv('xp_att3.csv')
+
+
     # print('test start')
-    # score_df = sp_test('res/att3', model='att', verb=False)
+    # score_df = sp_test('res/att2', model='att', verb=True)
     # print(score_df)
-    # score_df.to_csv('xp_att3.csv')
+    #score_df.to_csv('xp_att.csv')
 
-    print('test start')
-    score_df = xp_test('res/att3', model='att', verb=False)
-    print(score_df)
-    score_df.to_csv('xp_att3.csv')
-
-    # agent1s = []
-    # agent2s = []
-    # for filename in glob.glob(os.path.join("res/att3", "*.pkl")):
-    #    with open(filename, "rb") as f:
-    #        res = pickle.load(f)
-    #        agent1s += [res['p1']]
-    #        agent2s += [res['p2']]
-    # print(sample_games_att(agent1s[0], agent2s[12], episodes=20, verbose=True))
-
-    #
+    agent1s = []
+    agent2s = []
+    for filename in glob.glob(os.path.join("res/att3", "*.pkl")):
+       with open(filename, "rb") as f:
+           res = pickle.load(f)
+           agent1s += [res['p1']]
+           agent2s += [res['p2']]
+    print(sample_games_att(agent1s[1], agent2s[1], episodes=10, verbose=True))
