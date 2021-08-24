@@ -52,6 +52,16 @@ class FeedForwardDNN(nn.Module):
         return self.model(x.float())
 
 
+def get_mechanical(obs, num_cards, card_dim):
+    if len(obs.shape) == 2:
+        obs.unsqueeze(0)
+    hands = int((num_cards - 1) / 2)
+    action_space = obs[:, :, hands:-1]
+    unique_card = obs[:, :, -1].unsqueeze(2)
+    ret = torch.matmul(action_space.transpose(2,1), unique_card).squeeze(2)
+    return ret
+
+
 class QLearner:
     def __init__(self, player, env, policy_type='ff', hp=hp_default):
         self.player = player
@@ -80,20 +90,27 @@ class QLearner:
             card_dim = hp.nlab1 + hp.nlab2
             self.policy_net = AttentionModel3(num_cards, card_dim)
             self.policy_net.to(device)
+        elif policy_type == 'mechanical':
+            num_cards = 1 + 2 * self.hp.hand_size
+            card_dim = hp.nlab1 + hp.nlab2
+            self.policy_net = lambda x: get_mechanical(x, num_cards, card_dim)
         else:
             raise ValueError('Policy type unknown!')
+        
+        if policy_type != 'mechanical':
+            if hp.opt == 'adam':
+                self.optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=hp.lr_adam)
+            else:
+                self.optimizer = torch.optim.SGD(self.policy_net.parameters(), lr=hp.lr_sgd)
 
-        if hp.opt == 'adam':
-            self.optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=hp.lr_adam)
-        else:
-            self.optimizer = torch.optim.SGD(self.policy_net.parameters(), lr=hp.lr_sgd)
-
-    def select_action(self, obs):
+    def select_action(self, obs, evaluate=False):
         sample = random.random()
         eps_threshold = self.hp.eps_scheme['eps_end'] + (
                     self.hp.eps_scheme['eps_start'] - self.hp.eps_scheme['eps_end']) * \
                         math.exp(-1. * self.steps_done / self.hp.eps_scheme['eps_decay'])
         self.steps_done += 1
+        if evaluate:
+            return self.policy_net(obs).max(1)[1].view(1, 1)
         if sample > eps_threshold:
             with torch.no_grad():
                 # t.max(1) will return largest column value of each row.
