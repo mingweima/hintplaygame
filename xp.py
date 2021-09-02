@@ -76,10 +76,11 @@ def sample_games_att(p1, p2, episodes=10000, verbose=False):
             env.render()
     return np.array(rewards).mean()
 
+
 def sample_games_mechanical(p1, p2, episodes=10000, verbose=False):
     hp = p1.hp
     env = TwoRoundHintGame(hp=hp)
-    
+
     rewards = []
 
     for i_episode in range(episodes):
@@ -155,28 +156,24 @@ def xp_test(agent_path, model='ff', verb=False):
 
 def mechanical_test(verb=False):
     hp_train = Hp(hand_size=5,
-              nlab1=4,
-              nlab2=4,
-              shuffle_cards=False,
-              opt='adam',
-              nepsidoes=500000,
-              batch_size=512,
-              eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
-              replay_capacity=200000,
-              update_frequency=100,
-              )
+                  nlab1=4,
+                  nlab2=4,
+                  shuffle_cards=False,
+                  opt='adam',
+                  nepsidoes=500000,
+                  batch_size=512,
+                  eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
+                  replay_capacity=200000,
+                  update_frequency=100,
+                  )
     env = TwoRoundHintGame(hp=hp_train)
-    
-    score_dict = {}
-    for idx1 in range(10):
-        score_dict[idx1] = {}
-        for idx2 in range(10):
-            p1 = QLearner(1, env, policy_type='mechanical', hp=hp_train)
-            p2 = QLearner(1, env, policy_type='mechanical', hp=hp_train)
-            score_dict[idx1][idx2] = sample_games_mechanical(p1, p2, episodes=1000, verbose=verb)
-            print(idx1, idx2, score_dict[idx1][idx2])
-    return DataFrame(score_dict)
-    
+
+    p1 = QLearner(1, env, policy_type='mechanical', hp=hp_train)
+    p2 = QLearner(1, env, policy_type='mechanical', hp=hp_train)
+    score = sample_games_mechanical(p1, p2, episodes=1000, verbose=verb)
+    print(score)
+    return score
+
 
 if __name__ == "__main__":
     # print('test start')
@@ -189,24 +186,23 @@ if __name__ == "__main__":
     # print(score_df)
     # # score_df.to_csv('xp_att2.csv')
 
-    #print('test start')
-    #score_df = sp_test('res/att3', model='att', verb=False)
-    #print(score_df)
-    #score_df.to_csv('xp_att3.csv')
+    # print('test start')
+    # score_df = sp_test('res/att3', model='att', verb=False)
+    # print(score_df)
+    # score_df.to_csv('xp_att3.csv')
 
+    # print('test start')
+    # score_df = sp_test('res/Att3_hand_5_l1_4_l2_4', model='att', verb=False)
+    # print(score_df)
+    # score_df.to_csv('xp_att3_l_4.csv')
 
-    #print('test start')
-    #score_df = sp_test('res/Att3_hand_5_l1_4_l2_4', model='att', verb=False)
-    #print(score_df)
-    #score_df.to_csv('xp_att3_l_4.csv')
-
-    #agent1s = []
-    #agent2s = []
-    #for filename in glob.glob(os.path.join("res/att3", "*.pkl")):
+    # agent1s = []
+    # agent2s = []
+    # for filename in glob.glob(os.path.join("res/att3", "*.pkl")):
     #   with open(filename, "rb") as f:
     #       res = pickle.load(f)
     #       agent1s += [res['p1']]
     #       agent2s += [res['p2']]
-    #print(sample_games_att(agent1s[1], agent2s[1], episodes=10, verbose=True))
-    
+    # print(sample_games_att(agent1s[1], agent2s[1], episodes=10, verbose=True))
+
     print(mechanical_test(verb=False))

@@ -22,7 +22,7 @@ class Hp:
         self.label1_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']
         self.label2_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
 
-        self.agent_type=agent_type
+        self.agent_type = agent_type
         self.nepisodes = nepsidoes
         self.batch_size = batch_size
         self.eps_scheme = eps_scheme
@@ -33,8 +33,9 @@ class Hp:
         self.lr_adam = 0.001
 
     def __str__(self):
-        return str(self.agent_type) + '_hand_' + str(self.hand_size) + '_l1_' + str(self.nlab1) + '_l2_' + str(self.nlab2)
-    
+        return str(self.agent_type) + '_hand_' + str(self.hand_size) + '_l1_' + str(self.nlab1) + '_l2_' + str(
+            self.nlab2)
+
     def log(self, res_path=''):
         with open(os.path.join(res_path, 'hp.txt'), "w") as file:
             file.write(f"agent_type {self.agent_type} \n")
@@ -50,8 +51,7 @@ class Hp:
             file.write(f"replay_capacity {self.replay_capacity} \n")
             file.write(f"update_frequency {self.update_frequency} \n")
             file.write(f"opt {self.opt} \n")
-            file.close() 
-        
+            file.close()
 
 
 hp_default = Hp()
