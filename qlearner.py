@@ -50,6 +50,36 @@ class FeedForwardDNN(nn.Module):
     def forward(self, x):
         # x = x.to(device)
         return self.model(x.float())
+    
+
+class LSTM(nn.Module):
+    
+    def __init__(self, input_size, output_size, hidden_size, num_layers=1, n_hid=128):
+        super(LSTM, self).__init__()
+        self.num_layers = num_layers
+        self.hidden_size = hidden_size
+        self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size, 
+                            num_layers=num_layers, batch_first=True)
+        self.model = nn.Sequential(
+            nn.Linear(hidden_size, n_hid),
+            nn.ReLU(),
+            nn.Linear(n_hid, n_hid),
+            nn.ReLU(),
+            nn.Linear(n_hid, n_hid),
+            nn.ReLU(),
+            nn.Linear(n_hid, output_size)
+        )
+        
+    
+    def forward(self, x):
+        x = torch.transpose(x, 2, 1).float()
+        h_0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).float() #hidden state
+        c_0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).float() #internal state
+        output, (hn, cn) = self.lstm(x, (h_0, c_0))
+        hn = hn.view(-1, self.hidden_size)
+        return self.model(hn)
+        
+
 
 
 def get_mechanical(obs, num_cards, card_dim):
@@ -74,6 +104,10 @@ class QLearner:
 
         if policy_type == 'ff':
             self.policy_net = FeedForwardDNN(self.obs_space_size, self.action_space_size)
+            self.policy_net.to(device)
+        elif policy_type == 'lstm':
+            card_dim = hp.nlab1 + hp.nlab2
+            self.policy_net = LSTM(card_dim, self.action_space_size, self.obs_space_size)
             self.policy_net.to(device)
         elif policy_type == 'attention':
             num_cards = 1 + 2 * self.hp.hand_size

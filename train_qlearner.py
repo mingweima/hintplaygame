@@ -161,6 +161,61 @@ def train_lat_agents(hp=hp_train, verbose=True, lat_lambda=0.5):
     return result
 
 
+def train_lstm_agents(hp=hp_train, verbose=True):
+    num_episodes = hp.nepisodes
+    env = TwoRoundHintGame(hp=hp)
+    p1 = QLearner(1, env, policy_type='lstm', hp=hp)
+    p2 = QLearner(1, env, policy_type='lstm', hp=hp)
+    
+    rewards = []
+
+    for i_episode in range(num_episodes):
+        # Initialize the environment and state
+        obs1, info = env.reset()
+        obs1_a1, obs1_a2 = obs_to_agent(obs1, hp=hp)
+        obs1_a1 = obs1_a1.reshape(-1, hp.nlab1 + hp.nlab2).T
+        obs1_a2 = obs1_a2.reshape(-1, hp.nlab1 + hp.nlab2).T
+        # P1 select and perform a hint
+        # obs1_a1 = torch.tensor(obs1_a1, device=device)
+        a1 = p1.select_action(torch.tensor([obs1_a1], device=device))
+        obs2, _, _, _ = env.step(a1)
+        # P2 plays a card
+        obs2_a1, obs2_a2 = obs_to_agent(obs2, hp=hp)
+        obs2_a1 = obs2_a1.reshape(-1, hp.nlab1 + hp.nlab2).T
+        obs2_a2 = obs2_a2.reshape(-1, hp.nlab1 + hp.nlab2).T
+        # obs2_a2 = torch.tensor(obs2_a2, device=device)
+        a2 = p2.select_action(torch.tensor([obs2_a2], device=device))
+        _, r, _, _ = env.step(a2)
+        # Store the transition in memory
+        obs1_a1 = torch.tensor([obs1_a1], device=device)
+        obs2_a2 = torch.tensor([obs2_a2], device=device)
+        a1 = torch.tensor([a1], device=device)
+        a2 = torch.tensor([a2], device=device)
+        r = torch.tensor([r[0]], device=device)
+        p1.memory.push(obs1_a1, a1, None, r)
+        p2.memory.push(obs2_a2, a2, None, r)
+
+        # Perform one step of the optimization (on the policy network)
+        if i_episode % hp.update_frequency == 0:
+            p1.optimize_model()
+            p2.optimize_model()
+
+        # Update the target network, copying all weights and biases in DQN
+        # if i_episode % TARGET_UPDATE == 0:
+        #     p1.target_net.load_state_dict(p1.policy_net.state_dict())
+        #     p2.target_net.load_state_dict(p2.policy_net.state_dict())
+
+        rewards.append(r.cpu().numpy()[0])
+        print_num = num_episodes // 100
+        if verbose:
+            if i_episode > print_num and i_episode % print_num == 0:
+                print(datetime.datetime.now(), i_episode, np.array(rewards[-print_num:]).mean())
+    print('Training complete')
+    p1.memory = None
+    p2.memory = None
+    result = {'p1': p1, 'p2': p2}
+    return result
+
 def train_att_agents(hp=hp_train, verbose=True):
     num_episodes = hp.nepisodes
     env = TwoRoundHintGame(hp=hp)
@@ -336,7 +391,7 @@ if __name__ == '__main__':
     parser.add_argument('--nlab1', type=int, default=3)
     parser.add_argument('--nlab2', type=int, default=3)
     parser.add_argument('--shuffle_cards', type=bool, default=False)
-    parser.add_argument('--agent_type', type=str, default='Att3')
+    parser.add_argument('--agent_type', type=str, default='LSTM')
     parser.add_argument('--nepsidoes', type=int, default=500000)
     parser.add_argument('--batch_size', type=int, default=512)
     parser.add_argument('--replay_capacity', type=int, default=200000)
@@ -384,6 +439,8 @@ if __name__ == '__main__':
         res = train_att_agents(hp=hp_train)
     elif args.agent_type == 'FF':
         res = train_ff_agents(hp=hp_train)
+    elif args.agent_type == 'LSTM':
+        res = train_lstm_agents(hp=hp_train)
     else:
         raise ValueError("Agent not found in base!")
 
