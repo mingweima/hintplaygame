@@ -176,10 +176,10 @@ def mechanical_test(verb=False):
 
 
 if __name__ == "__main__":
-    # print('test start')
-    # score_df = sp_test('res/att_hand_5_l1_2_l2_2')
-    # print(score_df)
-    # score_df.to_csv('xp_att.csv')
+    print('test start')
+    score_df = sp_test('res/FF_hand_5_l1_3_l2_3')
+    print(score_df)
+    score_df.to_csv('xp_ff.csv')
 
     # print('test start')
     # score_df = sp_test('res/Archive2', model='att', verb=True)
@@ -205,4 +205,4 @@ if __name__ == "__main__":
     #       agent2s += [res['p2']]
     # print(sample_games_att(agent1s[1], agent2s[1], episodes=10, verbose=True))
 
-    print(mechanical_test(verb=False))
+    #print(mechanical_test(verb=False))
