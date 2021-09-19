@@ -43,7 +43,38 @@ def sample_games_ff(p1, p2, episodes=10000, verbose=False):
         rewards.append(r.numpy()[0])
         if verbose:
             env.render()
-    return np.array(rewards).mean()
+    return np.array(rewards)
+
+
+def sample_games_lstm(p1, p2, episodes=10000, verbose=False):
+    hp = p1.hp
+    env = TwoRoundHintGame(hp=hp)
+
+    rewards = []
+
+    for i_episode in range(episodes):
+        # Initialize the environment and state
+        obs1, info = env.reset()
+        if verbose:
+            env.render()
+        obs1_a1, obs1_a2 = obs_to_agent(obs1, hp=hp)
+        obs1_a1 = obs1_a1.reshape(-1, hp.nlab1 + hp.nlab2).T
+        # P1 select and perform a hint
+        # obs1_a1 = torch.tensor(obs1_a1, device=device)
+        a1 = p1.select_action(torch.tensor([obs1_a1], device=device), evaluate=True)
+        obs2, _, _, _ = env.step(a1)
+        if verbose:
+            env.render()
+        # P2 plays a card
+        obs2_a1, obs2_a2 = obs_to_agent(obs2, hp=hp)
+        obs2_a2 = obs2_a2.reshape(-1, hp.nlab1 + hp.nlab2).T
+        a2 = p2.select_action(torch.tensor([obs2_a2], device=device), evaluate=True)
+        _, r, _, _ = env.step(a2)
+        r = torch.tensor([r[0]], device=device)
+        rewards.append(r.numpy()[0])
+        if verbose:
+            env.render()
+    return np.array(rewards)
 
 
 def sample_games_att(p1, p2, episodes=10000, verbose=False):
@@ -74,7 +105,7 @@ def sample_games_att(p1, p2, episodes=10000, verbose=False):
         rewards.append(r.numpy()[0])
         if verbose:
             env.render()
-    return np.array(rewards).mean()
+    return np.array(rewards)
 
 
 def sample_games_mechanical(p1, p2, episodes=10000, verbose=False):
@@ -105,7 +136,7 @@ def sample_games_mechanical(p1, p2, episodes=10000, verbose=False):
         rewards.append(r.numpy()[0])
         if verbose:
             env.render()
-    return np.array(rewards).mean()
+    return np.array(rewards)
 
 
 def sp_test(agent_path, model='ff', verb=False):
@@ -122,11 +153,13 @@ def sp_test(agent_path, model='ff', verb=False):
         for idx2, p2 in enumerate(agent2s):
             print(idx1, idx2, )
             if model == 'ff':
-                score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb)
+                score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb).mean()
+            if model == 'lstm':
+                score_dict[idx1][idx2] = sample_games_lstm(p1, p2, episodes=1000, verbose=verb).mean()
             elif model == 'lat':
-                score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb)
+                score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb).mean()
             elif model == 'att':
-                score_dict[idx1][idx2] = sample_games_att(p1, p2, episodes=1000, verbose=verb)
+                score_dict[idx1][idx2] = sample_games_att(p1, p2, episodes=1000, verbose=verb).mean()
 
     return DataFrame(score_dict)
 
@@ -145,11 +178,13 @@ def xp_test(agent_path, model='ff', verb=False):
         for idx2, p2 in enumerate(agent2s):
             # if idx1 != idx2:
             if model == 'ff':
-                score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb)
+                score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb).mean()
             if model == 'lat':
-                score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb)
-            elif model == 'att':
-                score_dict[idx1][idx2] = sample_games_att(p1, p2, episodes=1000, verbose=verb)
+                score_dict[idx1][idx2] = sample_games_ff(p1, p2, episodes=1000, verbose=verb).mean()
+            if model == 'att':
+                score_dict[idx1][idx2] = sample_games_att(p1, p2, episodes=1000, verbose=verb).mean()
+            if model == 'lstm':
+                score_dict[idx1][idx2] = sample_games_lstm(p1, p2, episodes=1000, verbose=verb).mean()
             print(idx1, idx2, score_dict[idx1][idx2])
     return DataFrame(score_dict)
 
@@ -170,16 +205,15 @@ def mechanical_test(verb=False):
 
     p1 = QLearner(1, env, policy_type='mechanical', hp=hp_train)
     p2 = QLearner(1, env, policy_type='mechanical', hp=hp_train)
-    score = sample_games_mechanical(p1, p2, episodes=1000, verbose=verb)
-    print(score)
+    score = sample_games_mechanical(p1, p2, episodes=1000, verbose=verb).mean()
     return score
 
 
 if __name__ == "__main__":
     print('test start')
-    score_df = sp_test('res/FF_hand_5_l1_3_l2_3')
+    score_df = sp_test('res/Att1_hand_5_l1_3_l2_3', model='att')
     print(score_df)
-    score_df.to_csv('xp_ff.csv')
+    score_df.to_csv('xp_att1.csv')
 
     # print('test start')
     # score_df = sp_test('res/Archive2', model='att', verb=True)
