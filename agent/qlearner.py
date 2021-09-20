@@ -5,7 +5,7 @@ from collections import namedtuple, deque
 import torch
 import torch.nn as nn
 
-from attention import AttentionModel, AttentionModel2, AttentionModel3
+from agent.attention import AttentionModel, AttentionModel2, AttentionModel3
 from game.hyperparams import hp_default
 
 # if gpu is to be used
@@ -50,15 +50,15 @@ class FeedForwardDNN(nn.Module):
     def forward(self, x):
         # x = x.to(device)
         return self.model(x.float())
-    
+
 
 class LSTM(nn.Module):
-    
+
     def __init__(self, input_size, output_size, hidden_size, num_layers=1, n_hid=128):
         super(LSTM, self).__init__()
         self.num_layers = num_layers
         self.hidden_size = hidden_size
-        self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size, 
+        self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size,
                             num_layers=num_layers, batch_first=True)
         self.model = nn.Sequential(
             nn.Linear(hidden_size, n_hid),
@@ -69,17 +69,14 @@ class LSTM(nn.Module):
             nn.ReLU(),
             nn.Linear(n_hid, output_size)
         )
-        
-    
+
     def forward(self, x):
         x = torch.transpose(x, 2, 1).float()
-        h_0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).float() #hidden state
-        c_0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).float() #internal state
+        h_0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).float()  # hidden state
+        c_0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).float()  # internal state
         output, (hn, cn) = self.lstm(x, (h_0, c_0))
         hn = hn.view(-1, self.hidden_size)
         return self.model(hn)
-        
-
 
 
 def get_mechanical(obs, num_cards, card_dim):

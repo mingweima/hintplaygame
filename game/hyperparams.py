@@ -9,11 +9,11 @@ class Hp:
                  shuffle_cards=False,
                  agent_type='Att3',
                  opt='adam',
-                 nepisodes=1000000,
+                 nepisodes=10000,
                  batch_size=512,
                  eps_scheme={'eps_start': 0.95, 'eps_end': 0.05, 'eps_decay': 25000},
                  replay_capacity=25000,
-                 update_frequency=100,
+                 update_frequency=1,
                  ):
         self.nlab1 = nlab1  # label 1 can be number in Hanabi
         self.nlab2 = nlab2  # label 2 can be color in Hanabi

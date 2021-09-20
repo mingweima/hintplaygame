@@ -11,7 +11,7 @@ import numpy as np
 from pandas import DataFrame
 
 from game.hint_play_game import TwoRoundHintGame
-from agent.train_qlearner import obs_to_agent
+from train_qlearner import obs_to_agent
 
 from game.hyperparams import Hp
 from agent.qlearner import QLearner

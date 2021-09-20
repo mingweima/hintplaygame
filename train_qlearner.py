@@ -1,17 +1,16 @@
 import argparse
 import datetime
+import numpy as np
 import os
 import pickle
 import sys
+import torch
 from collections import namedtuple
 from os.path import dirname, abspath
 from pathlib import Path
 
-import numpy as np
-import torch
-
 sys.path.append(os.getcwd())
-sys.path.append("..")
+sys.path.append("")
 
 from game.hint_play_game import TwoRoundHintGame
 from game.hyperparams import Hp
@@ -167,13 +166,12 @@ def train_lat_agents(hp=hp_train_default, verbose=True, lat_lambda=0.5):
     return result
 
 
-<<<<<<< Updated upstream:train_qlearner.py
-def train_lstm_agents(hp=hp_train, verbose=True):
+def train_lstm_agents(hp=hp_train_default, verbose=True):
     num_episodes = hp.nepisodes
     env = TwoRoundHintGame(hp=hp)
     p1 = QLearner(1, env, policy_type='lstm', hp=hp)
     p2 = QLearner(1, env, policy_type='lstm', hp=hp)
-    
+
     rewards = []
 
     for i_episode in range(num_episodes):
@@ -223,10 +221,8 @@ def train_lstm_agents(hp=hp_train, verbose=True):
     result = {'p1': p1, 'p2': p2}
     return result
 
-def train_att_agents(hp=hp_train, verbose=True):
-=======
+
 def train_att_agents(hp=hp_train_default, verbose=True):
->>>>>>> Stashed changes:agent/train_qlearner.py
     num_episodes = hp.nepisodes
     env = TwoRoundHintGame(hp=hp)
     p1 = QLearner(1, env, policy_type='attention', hp=hp)
@@ -401,13 +397,8 @@ if __name__ == '__main__':
     parser.add_argument('--nlab1', type=int, default=3)
     parser.add_argument('--nlab2', type=int, default=3)
     parser.add_argument('--shuffle_cards', type=bool, default=False)
-<<<<<<< Updated upstream:train_qlearner.py
-    parser.add_argument('--agent_type', type=str, default='LSTM')
-    parser.add_argument('--nepsidoes', type=int, default=500000)
-=======
     parser.add_argument('--agent_type', type=str, default='Att3')
     parser.add_argument('--nepisodes', type=int, default=500000)
->>>>>>> Stashed changes:agent/train_qlearner.py
     parser.add_argument('--batch_size', type=int, default=512)
     parser.add_argument('--replay_capacity', type=int, default=200000)
     parser.add_argument('--update_frequency', type=int, default=100)
@@ -435,7 +426,7 @@ if __name__ == '__main__':
     #                  nlab2=3,
     #                  shuffle_cards=False,
     #                  opt='adam',
-    #                  nepsidoes=2000000,
+    #                  nepisodes=2000000,
     #                  batch_size=512,
     #                  eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
     #                  replay_capacity=200000,
@@ -444,28 +435,23 @@ if __name__ == '__main__':
 
     if args.agent_type == 'Att3':
         hp_train = hp_train_current
-        # res = train_att3_agents(hp=hp_train_default)
+        res = train_att3_agents(hp=hp_train)
     elif args.agent_type == 'Att2':
         hp_train = hp_train_current
-        res = train_att2_agents(hp=hp_train_default)
+        res = train_att2_agents(hp=hp_train)
     elif args.agent_type == 'Att1':
         hp_train = hp_train_current
-        res = train_att_agents(hp=hp_train_default)
+        res = train_att_agents(hp=hp_train)
     elif args.agent_type == 'FF':
-<<<<<<< Updated upstream:train_qlearner.py
+        hp_train = hp_train_current
         res = train_ff_agents(hp=hp_train)
     elif args.agent_type == 'LSTM':
-        res = train_lstm_agents(hp=hp_train)
-=======
         hp_train = hp_train_current
-        res = train_ff_agents(hp=hp_train_default)
->>>>>>> Stashed changes:agent/train_qlearner.py
+        res = train_lstm_agents(hp=hp_train)
     else:
         raise ValueError("Agent not found in base!")
 
-    curr_path = dirname(dirname(abspath(__file__)))
-    # parent_path = Path(curr_path).parent
-    save_dir = os.path.join(curr_path, f'res/{hp_train}')
+    save_dir = f'res/{hp_train}'
     print(save_dir)
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
