@@ -10,11 +10,11 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 import numpy as np
 from pandas import DataFrame
 
-from hint_play_game import TwoRoundHintGame
-from train_qlearner import obs_to_agent
+from game.hint_play_game import TwoRoundHintGame
+from agent.train_qlearner import obs_to_agent
 
-from hyperparams import Hp
-from qlearner import QLearner
+from game.hyperparams import Hp
+from agent.qlearner import QLearner
 
 
 def sample_games_ff(p1, p2, episodes=10000, verbose=False):
@@ -195,7 +195,7 @@ def mechanical_test(verb=False):
                   nlab2=4,
                   shuffle_cards=False,
                   opt='adam',
-                  nepsidoes=500000,
+                  nepisodes=500000,
                   batch_size=512,
                   eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
                   replay_capacity=200000,

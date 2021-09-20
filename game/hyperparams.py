@@ -9,7 +9,7 @@ class Hp:
                  shuffle_cards=False,
                  agent_type='Att3',
                  opt='adam',
-                 nepsidoes=1000000,
+                 nepisodes=1000000,
                  batch_size=512,
                  eps_scheme={'eps_start': 0.95, 'eps_end': 0.05, 'eps_decay': 25000},
                  replay_capacity=25000,
@@ -23,7 +23,7 @@ class Hp:
         self.label2_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
 
         self.agent_type = agent_type
-        self.nepisodes = nepsidoes
+        self.nepisodes = nepisodes
         self.batch_size = batch_size
         self.eps_scheme = eps_scheme
         self.replay_capacity = replay_capacity

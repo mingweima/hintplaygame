@@ -5,8 +5,8 @@ from collections import namedtuple, deque
 import torch
 import torch.nn as nn
 
-from hyperparams import hp_default
 from attention import AttentionModel, AttentionModel2, AttentionModel3
+from game.hyperparams import hp_default
 
 # if gpu is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -88,7 +88,7 @@ def get_mechanical(obs, num_cards, card_dim):
     hands = int((num_cards - 1) / 2)
     action_space = obs[:, :, hands:-1]
     unique_card = obs[:, :, -1].unsqueeze(2)
-    ret = torch.matmul(action_space.transpose(2,1), unique_card).squeeze(2)
+    ret = torch.matmul(action_space.transpose(2, 1), unique_card).squeeze(2)
     return ret
 
 
@@ -130,7 +130,7 @@ class QLearner:
             self.policy_net = lambda x: get_mechanical(x, num_cards, card_dim)
         else:
             raise ValueError('Policy type unknown!')
-        
+
         if policy_type != 'mechanical':
             if hp.opt == 'adam':
                 self.optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=hp.lr_adam)
@@ -140,7 +140,7 @@ class QLearner:
     def select_action(self, obs, evaluate=False):
         sample = random.random()
         eps_threshold = self.hp.eps_scheme['eps_end'] + (
-                    self.hp.eps_scheme['eps_start'] - self.hp.eps_scheme['eps_end']) * \
+                self.hp.eps_scheme['eps_start'] - self.hp.eps_scheme['eps_end']) * \
                         math.exp(-1. * self.steps_done / self.hp.eps_scheme['eps_decay'])
         self.steps_done += 1
         if evaluate:
@@ -186,7 +186,7 @@ class QLearner:
         loss.backward()
         if self.policy_type == 'attention' or self.policy_type == 'attention2' or self.policy_type == 'attention3':
             self.optimizer.step()
-            return 
+            return
         for param in self.policy_net.parameters():
             param.grad.data.clamp_(-1, 1)
         self.optimizer.step()

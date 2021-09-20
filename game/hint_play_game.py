@@ -1,13 +1,18 @@
+import os
 import random
+import sys
 from abc import ABC
 from copy import deepcopy
+
+sys.path.append(os.getcwd())
+sys.path.append("..")
 
 import gym
 import numpy as np
 import torch
 from gym import spaces
 
-from hyperparams import hp_default
+from game.hyperparams import hp_default
 
 # torch.cuda.is_available() checks and returns a Boolean True if a GPU is available, else it'll return False
 is_cuda = torch.cuda.is_available()

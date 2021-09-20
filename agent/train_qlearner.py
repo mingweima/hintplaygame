@@ -2,14 +2,20 @@ import argparse
 import datetime
 import os
 import pickle
+import sys
 from collections import namedtuple
+from os.path import dirname, abspath
+from pathlib import Path
 
 import numpy as np
 import torch
 
-from hint_play_game import TwoRoundHintGame
-from hyperparams import Hp
-from qlearner import QLearner
+sys.path.append(os.getcwd())
+sys.path.append("..")
+
+from game.hint_play_game import TwoRoundHintGame
+from game.hyperparams import Hp
+from agent.qlearner import QLearner
 
 # if gpu is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -17,20 +23,20 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
 
-hp_train = Hp(hand_size=5,
-              nlab1=4,
-              nlab2=4,
-              shuffle_cards=False,
-              opt='adam',
-              nepsidoes=500000,
-              batch_size=512,
-              eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
-              replay_capacity=200000,
-              update_frequency=100,
-              )
+hp_train_default = Hp(hand_size=5,
+                      nlab1=4,
+                      nlab2=4,
+                      shuffle_cards=False,
+                      opt='adam',
+                      nepisodes=500000,
+                      batch_size=512,
+                      eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
+                      replay_capacity=200000,
+                      update_frequency=100,
+                      )
 
 
-def obs_to_agent(obs, hp=hp_train):
+def obs_to_agent(obs, hp=hp_train_default):
     o1 = obs[:(1 + hp.hand_size) * (hp.nlab1 + hp.nlab2)]
     o2 = obs[(1 + hp.hand_size) * (hp.nlab1 + hp.nlab2):]
     hand1 = o1[:-(hp.nlab1 + hp.nlab2)]
@@ -50,7 +56,7 @@ def obs_to_agent(obs, hp=hp_train):
     return obs1, obs2
 
 
-def train_ff_agents(hp=hp_train, verbose=True):
+def train_ff_agents(hp=hp_train_default, verbose=True):
     num_episodes = hp.nepisodes
     env = TwoRoundHintGame(hp=hp)
     p1 = QLearner(1, env, policy_type='ff', hp=hp)
@@ -102,7 +108,7 @@ def train_ff_agents(hp=hp_train, verbose=True):
     return result
 
 
-def train_lat_agents(hp=hp_train, verbose=True, lat_lambda=0.5):
+def train_lat_agents(hp=hp_train_default, verbose=True, lat_lambda=0.5):
     num_episodes = hp.nepisodes
     env = TwoRoundHintGame(hp=hp)
     p1 = QLearner(1, env, policy_type='ff', hp=hp)
@@ -161,6 +167,7 @@ def train_lat_agents(hp=hp_train, verbose=True, lat_lambda=0.5):
     return result
 
 
+<<<<<<< Updated upstream:train_qlearner.py
 def train_lstm_agents(hp=hp_train, verbose=True):
     num_episodes = hp.nepisodes
     env = TwoRoundHintGame(hp=hp)
@@ -217,6 +224,9 @@ def train_lstm_agents(hp=hp_train, verbose=True):
     return result
 
 def train_att_agents(hp=hp_train, verbose=True):
+=======
+def train_att_agents(hp=hp_train_default, verbose=True):
+>>>>>>> Stashed changes:agent/train_qlearner.py
     num_episodes = hp.nepisodes
     env = TwoRoundHintGame(hp=hp)
     p1 = QLearner(1, env, policy_type='attention', hp=hp)
@@ -272,7 +282,7 @@ def train_att_agents(hp=hp_train, verbose=True):
     return result
 
 
-def train_att2_agents(hp=hp_train, verbose=True):
+def train_att2_agents(hp=hp_train_default, verbose=True):
     num_episodes = hp.nepisodes
     env = TwoRoundHintGame(hp=hp)
     p1 = QLearner(1, env, policy_type='attention2', hp=hp)
@@ -328,7 +338,7 @@ def train_att2_agents(hp=hp_train, verbose=True):
     return result
 
 
-def train_att3_agents(hp=hp_train, verbose=True):
+def train_att3_agents(hp=hp_train_default, verbose=True):
     num_episodes = hp.nepisodes
     env = TwoRoundHintGame(hp=hp)
     p1 = QLearner(1, env, policy_type='attention3', hp=hp)
@@ -391,58 +401,75 @@ if __name__ == '__main__':
     parser.add_argument('--nlab1', type=int, default=3)
     parser.add_argument('--nlab2', type=int, default=3)
     parser.add_argument('--shuffle_cards', type=bool, default=False)
+<<<<<<< Updated upstream:train_qlearner.py
     parser.add_argument('--agent_type', type=str, default='LSTM')
     parser.add_argument('--nepsidoes', type=int, default=500000)
+=======
+    parser.add_argument('--agent_type', type=str, default='Att3')
+    parser.add_argument('--nepisodes', type=int, default=500000)
+>>>>>>> Stashed changes:agent/train_qlearner.py
     parser.add_argument('--batch_size', type=int, default=512)
     parser.add_argument('--replay_capacity', type=int, default=200000)
     parser.add_argument('--update_frequency', type=int, default=100)
 
     args = parser.parse_args()
 
+    # Att: nepsi
     # Att training params
-    hp_train = Hp(hand_size=args.hand_size,
-                  nlab1=args.nlab1,
-                  nlab2=args.nlab2,
-                  shuffle_cards=args.shuffle_cards,
-                  agent_type=args.agent_type,
-                  opt='adam',
-                  nepsidoes=args.nepsidoes,
-                  batch_size=args.batch_size,
-                  eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
-                  replay_capacity=args.replay_capacity,
-                  update_frequency=args.update_frequency,
-                  )
+    hp_train_current = Hp(hand_size=args.hand_size,
+                          nlab1=args.nlab1,
+                          nlab2=args.nlab2,
+                          shuffle_cards=args.shuffle_cards,
+                          agent_type=args.agent_type,
+                          opt='adam',
+                          nepisodes=args.nepisodes,
+                          batch_size=args.batch_size,
+                          eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
+                          replay_capacity=args.replay_capacity,
+                          update_frequency=args.update_frequency,
+                          )
 
     # FF training params
-    # hp_train = Hp(hand_size=5,
-    #               nlab1=3,
-    #               nlab2=3,
-    #               shuffle_cards=False,
-    #               opt='adam',
-    #               nepsidoes=2000000,
-    #               batch_size=512,
-    #               eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
-    #               replay_capacity=200000,
-    #               update_frequency=100,
-    #               )
-
-    save_dir = f'res/{hp_train}'
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-    hp_train.log(res_path=save_dir)
+    # hp_train_ff = Hp(hand_size=5,
+    #                  nlab1=3,
+    #                  nlab2=3,
+    #                  shuffle_cards=False,
+    #                  opt='adam',
+    #                  nepsidoes=2000000,
+    #                  batch_size=512,
+    #                  eps_scheme={'eps_start': 0.95, 'eps_end': 0.01, 'eps_decay': 50000},
+    #                  replay_capacity=200000,
+    #                  update_frequency=100,
+    #                  )
 
     if args.agent_type == 'Att3':
-        res = train_att3_agents(hp=hp_train)
+        hp_train = hp_train_current
+        # res = train_att3_agents(hp=hp_train_default)
     elif args.agent_type == 'Att2':
-        res = train_att2_agents(hp=hp_train)
+        hp_train = hp_train_current
+        res = train_att2_agents(hp=hp_train_default)
     elif args.agent_type == 'Att1':
-        res = train_att_agents(hp=hp_train)
+        hp_train = hp_train_current
+        res = train_att_agents(hp=hp_train_default)
     elif args.agent_type == 'FF':
+<<<<<<< Updated upstream:train_qlearner.py
         res = train_ff_agents(hp=hp_train)
     elif args.agent_type == 'LSTM':
         res = train_lstm_agents(hp=hp_train)
+=======
+        hp_train = hp_train_current
+        res = train_ff_agents(hp=hp_train_default)
+>>>>>>> Stashed changes:agent/train_qlearner.py
     else:
         raise ValueError("Agent not found in base!")
+
+    curr_path = dirname(dirname(abspath(__file__)))
+    # parent_path = Path(curr_path).parent
+    save_dir = os.path.join(curr_path, f'res/{hp_train}')
+    print(save_dir)
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    hp_train.log(res_path=save_dir)
 
     with open((os.path.join(save_dir, str(datetime.datetime.now()) + ".pkl")), 'wb') as handle:
         pickle.dump(res, handle, protocol=pickle.HIGHEST_PROTOCOL)
