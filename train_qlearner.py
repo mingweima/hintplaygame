@@ -1,13 +1,12 @@
 import argparse
 import datetime
-import numpy as np
 import os
 import pickle
 import sys
-import torch
 from collections import namedtuple
-from os.path import dirname, abspath
-from pathlib import Path
+
+import numpy as np
+import torch
 
 sys.path.append(os.getcwd())
 sys.path.append("")
@@ -103,7 +102,7 @@ def train_ff_agents(hp=hp_train_default, verbose=True):
     print('Training complete')
     p1.memory = None
     p2.memory = None
-    result = {'p1': p1, 'p2': p2}
+    result = {'p1': p1, 'p2': p2, 'rewards': rewards}
     return result
 
 
@@ -162,7 +161,7 @@ def train_lat_agents(hp=hp_train_default, verbose=True, lat_lambda=0.5):
     print('Training complete')
     p1.memory = None
     p2.memory = None
-    result = {'p1': p1, 'p2': p2}
+    result = {'p1': p1, 'p2': p2, 'rewards': rewards}
     return result
 
 
@@ -218,7 +217,7 @@ def train_lstm_agents(hp=hp_train_default, verbose=True):
     print('Training complete')
     p1.memory = None
     p2.memory = None
-    result = {'p1': p1, 'p2': p2}
+    result = {'p1': p1, 'p2': p2, 'rewards': rewards}
     return result
 
 
@@ -274,7 +273,7 @@ def train_att_agents(hp=hp_train_default, verbose=True):
     print('Training complete')
     p1.memory = None
     p2.memory = None
-    result = {'p1': p1, 'p2': p2}
+    result = {'p1': p1, 'p2': p2, 'rewards': rewards}
     return result
 
 
@@ -330,7 +329,7 @@ def train_att2_agents(hp=hp_train_default, verbose=True):
     print('Training complete')
     p1.memory = None
     p2.memory = None
-    result = {'p1': p1, 'p2': p2}
+    result = {'p1': p1, 'p2': p2, 'rewards': rewards}
     return result
 
 
@@ -386,7 +385,7 @@ def train_att3_agents(hp=hp_train_default, verbose=True):
     print('Training complete')
     p1.memory = None
     p2.memory = None
-    result = {'p1': p1, 'p2': p2}
+    result = {'p1': p1, 'p2': p2, 'rewards': rewards}
     return result
 
 
