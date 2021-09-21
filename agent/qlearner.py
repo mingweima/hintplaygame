@@ -181,7 +181,7 @@ class QLearner:
         # Optimize the model
         self.optimizer.zero_grad()
         loss.backward()
-        if self.policy_type == 'Att' or self.policy_type == 'Att2' or self.policy_type == 'Att3':
+        if self.policy_type == 'Att1' or self.policy_type == 'Att2' or self.policy_type == 'Att3':
             self.optimizer.step()
             return
         for param in self.policy_net.parameters():
