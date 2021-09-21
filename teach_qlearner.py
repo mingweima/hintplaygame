@@ -126,6 +126,58 @@ def teach_att3_agents(teacher_agent,
     return result
 
 
+def teach_agents(teacher_agent,
+                 hp_student=hp_train_default,
+                 hp_teacher=hp_train_default,
+                 verbose=True, ):
+    num_episodes = hp_student.nepisodes
+    env = TwoRoundHintGame(hp=hp_student)
+    p1 = teacher_agent
+    p2 = QLearner(1, env, policy_type=hp_student.agent_type, hp=hp_student)
+
+    rewards = []
+
+    for i_episode in range(num_episodes):
+        # Initialize the environment and state
+        obs1, info = env.reset()
+        obs1_a1, obs1_a2 = obs_to_agent(obs1, hp=hp_teacher)
+        if hp_teacher.agent_type != 'FF':
+            obs1_a1 = obs1_a1.reshape(-1, hp_teacher.nlab1 + hp_teacher.nlab2).T
+        # P1 select and perform a hint
+        a1 = p1.select_action(torch.tensor([obs1_a1], device=device))
+        obs2, _, _, _ = env.step(a1)
+        # P2 plays a card
+        obs2_a1, obs2_a2 = obs_to_agent(obs2, hp=hp)
+        if hp_student.agent_type != 'FF':
+            obs2_a2 = obs2_a2.reshape(-1, hp_student.nlab1 + hp_student.nlab2).T
+        a2 = p2.select_action(torch.tensor([obs2_a2], device=device))
+        _, r, _, _ = env.step(a2)
+        # Store the transition in memory
+        obs1_a1 = torch.tensor([obs1_a1], device=device)
+        obs2_a2 = torch.tensor([obs2_a2], device=device)
+        a1 = torch.tensor([a1], device=device)
+        a2 = torch.tensor([a2], device=device)
+        r = torch.tensor([r[0]], device=device)
+        p1.memory.push(obs1_a1, a1, None, r)
+        p2.memory.push(obs2_a2, a2, None, r)
+
+        # Perform one step of the optimization (on the policy network)
+        if i_episode % hp_student.update_frequency == 0:
+            p1.optimize_model()
+            p2.optimize_model()
+
+        rewards.append(r.cpu().numpy()[0])
+        print_num = num_episodes // 100
+        if verbose:
+            if i_episode > print_num and i_episode % print_num == 0:
+                print(datetime.datetime.now(), i_episode, np.array(rewards[-print_num:]).mean())
+    print('Training complete')
+    p1.memory = None
+    p2.memory = None
+    result = {'p1': p1, 'p2': p2, 'rewards': rewards}
+    return result
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
@@ -180,25 +232,8 @@ if __name__ == '__main__':
             agent1s += [res['p1']]
     teacher = agent1s[0]
 
-    if args.agent_type == 'Att3':
-        res = teach_att3_agents(teacher,
-                                hp_student=hp_train,
-                                hp_teacher=hp_teacher)
-    elif args.agent_type == 'Att2':
-        pass
-        # res = train_att2_agents(hp=hp_train)
-    elif args.agent_type == 'Att1':
-        pass
-        # res = train_att_agents(hp=hp_train)
-    elif args.agent_type == 'FF':
-        res = teach_ff_agent(teacher,
-                             hp_student=hp_train,
-                             hp_teacher=hp_teacher)
-    elif args.agent_type == 'LSTM':
-        pass
-        # res = train_lstm_agents(hp=hp_train)
-    else:
-        raise ValueError("Agent not found in base!")
+    res = teach_agents(teacher, hp_teacher=hp_teacher,
+                       hp_student=hp_train, verbose=True)
 
     save_dir = f'res/teach/{hp_train}'
     print(save_dir)
