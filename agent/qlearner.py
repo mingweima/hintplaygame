@@ -106,7 +106,7 @@ class QLearner:
             card_dim = hp.nlab1 + hp.nlab2
             self.policy_net = LSTM(card_dim, self.action_space_size, self.obs_space_size)
             self.policy_net.to(device)
-        elif policy_type == 'Att':
+        elif policy_type == 'Att1':
             num_cards = 1 + 2 * self.hp.hand_size
             card_dim = hp.nlab1 + hp.nlab2
             self.policy_net = AttentionModel(num_cards, card_dim, self.action_space_size)

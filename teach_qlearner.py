@@ -147,7 +147,7 @@ def teach_agents(teacher_agent,
         a1 = p1.select_action(torch.tensor([obs1_a1], device=device))
         obs2, _, _, _ = env.step(a1)
         # P2 plays a card
-        obs2_a1, obs2_a2 = obs_to_agent(obs2, hp=hp)
+        obs2_a1, obs2_a2 = obs_to_agent(obs2, hp=hp_student)
         if hp_student.agent_type != 'FF':
             obs2_a2 = obs2_a2.reshape(-1, hp_student.nlab1 + hp_student.nlab2).T
         a2 = p2.select_action(torch.tensor([obs2_a2], device=device))
@@ -158,12 +158,10 @@ def teach_agents(teacher_agent,
         a1 = torch.tensor([a1], device=device)
         a2 = torch.tensor([a2], device=device)
         r = torch.tensor([r[0]], device=device)
-        p1.memory.push(obs1_a1, a1, None, r)
         p2.memory.push(obs2_a2, a2, None, r)
 
         # Perform one step of the optimization (on the policy network)
         if i_episode % hp_student.update_frequency == 0:
-            p1.optimize_model()
             p2.optimize_model()
 
         rewards.append(r.cpu().numpy()[0])
