@@ -99,24 +99,24 @@ class QLearner:
         self.hp = hp
         self.policy_type = policy_type
 
-        if policy_type == 'ff':
+        if policy_type == 'FF':
             self.policy_net = FeedForwardDNN(self.obs_space_size, self.action_space_size)
             self.policy_net.to(device)
-        elif policy_type == 'lstm':
+        elif policy_type == 'LSTM':
             card_dim = hp.nlab1 + hp.nlab2
             self.policy_net = LSTM(card_dim, self.action_space_size, self.obs_space_size)
             self.policy_net.to(device)
-        elif policy_type == 'attention':
+        elif policy_type == 'Att':
             num_cards = 1 + 2 * self.hp.hand_size
             card_dim = hp.nlab1 + hp.nlab2
             self.policy_net = AttentionModel(num_cards, card_dim, self.action_space_size)
             self.policy_net.to(device)
-        elif policy_type == 'attention2':
+        elif policy_type == 'Att2':
             num_cards = 1 + 2 * self.hp.hand_size
             card_dim = hp.nlab1 + hp.nlab2
             self.policy_net = AttentionModel2(num_cards, card_dim, self.action_space_size)
             self.policy_net.to(device)
-        elif policy_type == 'attention3':
+        elif policy_type == 'Att3':
             num_cards = 1 + 2 * self.hp.hand_size
             card_dim = hp.nlab1 + hp.nlab2
             self.policy_net = AttentionModel3(num_cards, card_dim)
@@ -181,7 +181,7 @@ class QLearner:
         # Optimize the model
         self.optimizer.zero_grad()
         loss.backward()
-        if self.policy_type == 'attention' or self.policy_type == 'attention2' or self.policy_type == 'attention3':
+        if self.policy_type == 'Att' or self.policy_type == 'Att2' or self.policy_type == 'Att3':
             self.optimizer.step()
             return
         for param in self.policy_net.parameters():
