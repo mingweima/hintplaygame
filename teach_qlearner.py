@@ -36,96 +36,6 @@ hp_train_default = Hp(hand_size=5,
                       )
 
 
-def teach_ff_agent(teacher_agent,
-                   hp_student=hp_train_default,
-                   hp_teacher=hp_train_default,
-                   verbose=True):
-    num_episodes = hp_student.nepisodes
-    env = TwoRoundHintGame(hp=hp_student)
-    p1 = teacher_agent
-    p2 = QLearner(1, env, policy_type='ff', hp=hp_student)
-
-    rewards = []
-
-    for i_episode in range(num_episodes):
-        # Initialize the environment and state
-        obs1, info = env.reset()
-        obs1_a1, _ = obs_to_agent(obs1, hp=hp_teacher)
-        # P1 select and perform a hint
-        a1 = p1.select_action(torch.tensor([obs1_a1], device=device))
-        obs2, _, _, _ = env.step(a1)
-        # P2 plays a card
-        _, obs2_a2 = obs_to_agent(obs2, hp=hp_student)
-        a2 = p2.select_action(torch.tensor([obs2_a2], device=device))
-        _, r, _, _ = env.step(a2)
-        # Store the transition in memory
-        obs2_a2 = torch.tensor([obs2_a2], device=device)
-        a2 = torch.tensor([a2], device=device)
-        r = torch.tensor([r[0]], device=device)
-        p2.memory.push(obs2_a2, a2, None, r)
-
-        # Perform one step of the optimization (on the policy network)
-        if i_episode % hp_student.update_frequency == 0:
-            p2.optimize_model()
-
-        rewards.append(r.cpu().numpy()[0])
-        print_num = num_episodes // 100
-        if verbose:
-            if i_episode > print_num and i_episode % print_num == 0:
-                print(datetime.datetime.now(), i_episode, np.array(rewards[-print_num:]).mean())
-    print('Training complete')
-    p1.memory = None
-    p2.memory = None
-    result = {'p1': p1, 'p2': p2, 'rewards': rewards}
-    return result
-
-
-def teach_att3_agents(teacher_agent,
-                      hp_student=hp_train_default,
-                      hp_teacher=hp_train_default,
-                      verbose=True):
-    num_episodes = hp_student.nepisodes
-    env = TwoRoundHintGame(hp=hp_student)
-    p1 = teacher_agent
-    p2 = QLearner(1, env, policy_type='attention3', hp=hp_student)
-
-    rewards = []
-
-    for i_episode in range(num_episodes):
-        # Initialize the environment and state
-        obs1, info = env.reset()
-        obs1_a1, _ = obs_to_agent(obs1, hp=hp_teacher)
-        obs1_a1 = obs1_a1.reshape(-1, hp_teacher.nlab1 + hp_teacher.nlab2).T
-        # P1 select and perform a hint
-        a1 = p1.select_action(torch.tensor([obs1_a1], device=device))
-        obs2, _, _, _ = env.step(a1)
-        # P2 plays a card
-        obs2_a1, obs2_a2 = obs_to_agent(obs2, hp=hp_student)
-        obs2_a2 = obs2_a2.reshape(-1, hp_student.nlab1 + hp_student.nlab2).T
-        a2 = p2.select_action(torch.tensor([obs2_a2], device=device))
-        _, r, _, _ = env.step(a2)
-        # Store the transition in memory
-        obs2_a2 = torch.tensor([obs2_a2], device=device)
-        a2 = torch.tensor([a2], device=device)
-        r = torch.tensor([r[0]], device=device)
-        p2.memory.push(obs2_a2, a2, None, r)
-
-        # Perform one step of the optimization (on the policy network)
-        if i_episode % hp_student.update_frequency == 0:
-            p2.optimize_model()
-
-        rewards.append(r.cpu().numpy()[0])
-        print_num = num_episodes // 100
-        if verbose:
-            if i_episode > print_num and i_episode % print_num == 0:
-                print(datetime.datetime.now(), i_episode, np.array(rewards[-print_num:]).mean())
-    print('Training complete')
-    p1.memory = None
-    p2.memory = None
-    result = {'p1': p1, 'p2': p2, 'rewards': rewards}
-    return result
-
-
 def teach_agents(teacher_agent,
                  hp_student=hp_train_default,
                  hp_teacher=hp_train_default,
@@ -233,7 +143,7 @@ if __name__ == '__main__':
     res = teach_agents(teacher, hp_teacher=hp_teacher,
                        hp_student=hp_train, verbose=True)
 
-    save_dir = f'res/teach/{hp_train}'
+    save_dir = f'res/teach/{hp_train}_{hp_teacher}'
     print(save_dir)
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
