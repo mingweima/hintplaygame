@@ -36,8 +36,8 @@ class Hp:
         return str(self.agent_type) + '_hand_' + str(self.hand_size) + '_l1_' + str(self.nlab1) + '_l2_' + str(
             self.nlab2)
 
-    def log(self, res_path=''):
-        with open(os.path.join(res_path, 'hp.txt'), "w") as file:
+    def log(self, res_path='', file_name='hp.txt'):
+        with open(os.path.join(res_path, file_name), "w") as file:
             file.write(f"agent_type {self.agent_type} \n")
             file.write(f"nlab 1 {self.nlab1} \n")
             file.write(f"nlab 2 {self.nlab2} \n")
