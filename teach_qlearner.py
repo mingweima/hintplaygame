@@ -99,6 +99,7 @@ if __name__ == '__main__':
     parser.add_argument('--replay_capacity', type=int, default=200000)
     parser.add_argument('--update_frequency', type=int, default=100)
     parser.add_argument('--teacher_type', type=str, default='Att3')
+    parser.add_argument('--teacher_number', type=int, default=0)
 
     args = parser.parse_args()
 
@@ -134,11 +135,11 @@ if __name__ == '__main__':
 
     teacher_path = f'res/{hp_teacher}'
     agent1s = []
-    for filename in glob.glob(os.path.join(teacher_path, "*.pkl")):
+    for filename in sorted(glob.glob(os.path.join(teacher_path, "*.pkl"))):
         with open(filename, "rb") as f:
             res = pickle.load(f)
             agent1s += [res['p1']]
-    teacher = agent1s[0]
+    teacher = agent1s[args.teacher_number]
 
     res = teach_agents(teacher, hp_teacher=hp_teacher,
                        hp_student=hp_train, verbose=True)
