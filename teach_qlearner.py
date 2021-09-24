@@ -144,7 +144,7 @@ if __name__ == '__main__':
     res = teach_agents(teacher, hp_teacher=hp_teacher,
                        hp_student=hp_train, verbose=True)
 
-    save_dir = f'res/teach/{hp_train}_{hp_teacher}}'
+    save_dir = f'res/teach/{hp_train}_{hp_teacher}'
     print(save_dir)
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
