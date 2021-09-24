@@ -211,9 +211,9 @@ def mechanical_test(verb=False):
 
 if __name__ == "__main__":
     print('test start')
-    score_df = sp_test('res/Att1_hand_5_l1_3_l2_3', model='att')
+    score_df = sp_test('/Users/liujizhou/Desktop/ReinforcementLearning/some work/hintplaygame/res/teach/FF_hand_5_l1_3_l2_3_Att3_hand_5_l1_3_l2_3', model='att')
     print(score_df)
-    score_df.to_csv('xp_att1.csv')
+    score_df.to_csv('xp_teach_att3_ff.csv')
 
     # print('test start')
     # score_df = sp_test('res/Archive2', model='att', verb=True)
