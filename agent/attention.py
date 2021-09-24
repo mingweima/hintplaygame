@@ -38,17 +38,17 @@ class Attention(nn.Module):
         self.dropout_1 = nn.Dropout(dropout)
         self.dropout_2 = nn.Dropout(dropout)
 
-    def forward(self, S):
-        S = self.norm_1(S).float()
-        q = self.k_linear(S)
-        k = self.k_linear(S)
-        v = self.v_linear(S)
+    def forward(self, s):
+        s = self.norm_1(s).float()
+        q = self.q_linear(s)
+        k = self.k_linear(s)
+        v = self.v_linear(s)
         scores = torch.matmul(q, k.transpose(-2, -1)) / np.sqrt(self.dk)
         scores = F.softmax(scores, dim=-1)
         scores = self.dropout_1(scores)
         output = torch.matmul(scores, v)
-        S = self.norm_2(S + self.dropout_2(output))
-        return S
+        s = self.norm_2(s + self.dropout_2(output))
+        return s
 
 
 class AttentionModel(nn.Module, ABC):
