@@ -144,12 +144,12 @@ if __name__ == '__main__':
     res = teach_agents(teacher, hp_teacher=hp_teacher,
                        hp_student=hp_train, verbose=True)
 
-    save_dir = f'res/teach/{hp_train}_{hp_teacher}'
+    save_dir = f'res/teach/{hp_train}_{hp_teacher}}'
     print(save_dir)
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     hp_train.log(res_path=save_dir, file_name='hp_student.txt')
     hp_teacher.log(res_path=save_dir, file_name='hp_teacher.txt')
 
-    with open((os.path.join(save_dir, str(datetime.datetime.now()) + ".pkl")), 'wb') as handle:
+    with open((os.path.join(save_dir, str(datetime.datetime.now()) + f"_{args.teacher_number}.pkl")), 'wb') as handle:
         pickle.dump(res, handle, protocol=pickle.HIGHEST_PROTOCOL)
