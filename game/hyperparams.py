@@ -35,8 +35,8 @@ class Hp:
         self.lr_adam = 0.001
 
     def __str__(self):
-        return str(self.agent_type) + '_hand_' + str(self.hand_size) + '_l1_' + str(self.nlab1) + '_l2_' + str(
-            self.nlab2)
+        return str(self.agent_type) + '_hs_' + str(self.hand_size) + '_l1_' + str(self.nlab1) + '_l2_' + str(
+            self.nlab2) + '_' + str(self.shuffle_cards) + str(self.same_hand) + str(self.nepisodes)
 
     def log(self, res_path='', file_name='hp.txt'):
         with open(os.path.join(res_path, file_name), "w") as file:
