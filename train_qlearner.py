@@ -110,6 +110,7 @@ if __name__ == '__main__':
     parser.add_argument('--hand_size', type=int, default=5)
     parser.add_argument('--nlab1', type=int, default=3)
     parser.add_argument('--nlab2', type=int, default=3)
+    parser.add_argument('--same_hand', type=bool, default=False)
     parser.add_argument('--shuffle_cards', type=bool, default=False)
     parser.add_argument('--agent_type', type=str, default='Att3')
     parser.add_argument('--nepisodes', type=int, default=500000)
@@ -125,6 +126,7 @@ if __name__ == '__main__':
                           nlab1=args.nlab1,
                           nlab2=args.nlab2,
                           shuffle_cards=args.shuffle_cards,
+                          same_hand=args.same_hand,
                           agent_type=args.agent_type,
                           opt='adam',
                           nepisodes=args.nepisodes,

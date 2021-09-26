@@ -7,6 +7,7 @@ class Hp:
                  nlab1=5,
                  nlab2=5,
                  shuffle_cards=False,
+                 same_hand=False,
                  agent_type='Att3',
                  opt='adam',
                  nepisodes=10000,
@@ -18,6 +19,7 @@ class Hp:
         self.nlab1 = nlab1  # label 1 can be number in Hanabi
         self.nlab2 = nlab2  # label 2 can be color in Hanabi
         self.hand_size = hand_size  # the number of cards held by a player
+        self.same_hand = same_hand
         self.shuffle_cards = shuffle_cards
         self.label1_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']
         self.label2_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
@@ -42,6 +44,7 @@ class Hp:
             file.write(f"nlab 1 {self.nlab1} \n")
             file.write(f"nlab 2 {self.nlab2} \n")
             file.write(f"hand_size {self.hand_size} \n")
+            file.write(f"same hand {self.same_hand} \n")
             file.write(f"shuffle_cards {self.shuffle_cards} \n")
             file.write(f"label1_list {self.label1_list} \n")
             file.write(f"label2_list {self.label2_list} \n")

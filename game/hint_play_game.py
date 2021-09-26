@@ -81,8 +81,14 @@ def get_initial_state(hp=hp_default):
     info = {}
     o1, o2 = [], []
     for card_ind in range(hp.hand_size):
-        o1.append(get_rand_card(hp=hp))
-        o2.append(get_rand_card(hp=hp))
+        card = get_rand_card(hp=hp)
+        o1.append(card)
+        if hp.same_hand:
+            o2.append(card)
+        else:
+            o2.append(get_rand_card(hp=hp))
+    if hp.shuffle_cards:
+        random.shuffle(o2)
     playable_card_num = random.sample(range(hp.hand_size), 1)[0]
     o1.append(o2[playable_card_num])
     o2.append(np.zeros((hp.nlab1 + hp.nlab2)))
@@ -192,3 +198,5 @@ class TwoRoundHintGame(gym.Env, ABC):
                   self.info['played_card_number'].numpy()[0][0])
             print(f'Final reward of game: {self.info["final_reward"]}')
             print('\n')
+
+
