@@ -143,6 +143,8 @@ hejia*.csv
 
 data/.DS_Store
 xp.py
+sample/xp.py
+
 res/FF_hs_3_l1_3_l2_3_TrueTrue2000000/hp.txt
 res/FF_hs_3_l1_3_l2_3_TrueTrue2000000/2021-09-25 21:20:19.458330.pkl
 res/Att3_hs_3_l1_3_l2_3_TrueTrue2000000/hp.txt
@@ -151,3 +153,4 @@ res/Att2_hs_3_l1_3_l2_3_TrueTrue2000000/hp.txt
 res/Att2_hs_3_l1_3_l2_3_TrueTrue2000000/2021-09-25 23:48:58.091097.pkl
 res/Att1_hs_3_l1_3_l2_3_TrueTrue2000000/hp.txt
 res/Att1_hs_3_l1_3_l2_3_TrueTrue2000000/2021-09-25 23:52:04.668557.pkl
+

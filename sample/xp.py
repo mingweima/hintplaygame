@@ -89,6 +89,26 @@ def xp_test(agent_path, model='ff', verb=False):
 
 
 if __name__ == "__main__":
+    print('test start')
+    score_df = sp_test(
+        '/Users/liujizhou/Desktop/ReinforcementLearning/some work/hintplaygame/res/teach/Att3_hand_5_l1_3_l2_3_FF_hand_5_l1_3_l2_3')
+    print(score_df)
+    score_df.to_csv('xp_teach_att3.csv')
+
+    score_df = sp_test(
+        '/Users/liujizhou/Desktop/ReinforcementLearning/some work/hintplaygame/res/teach/Att2_hand_5_l1_3_l2_3_FF_hand_5_l1_3_l2_3')
+    print(score_df)
+    score_df.to_csv('xp_teach_att2.csv')
+
+    score_df = sp_test(
+        '/Users/liujizhou/Desktop/ReinforcementLearning/some work/hintplaygame/res/teach/Att1_hand_5_l1_3_l2_3_FF_hand_5_l1_3_l2_3')
+    print(score_df)
+    score_df.to_csv('xp_teach_att1.csv')
+
+    score_df = sp_test(
+        '/Users/liujizhou/Desktop/ReinforcementLearning/some work/hintplaygame/res/teach/FF_hand_5_l1_3_l2_3_FF_hand_5_l1_3_l2_3')
+    print(score_df)
+    score_df.to_csv('xp_teach_ff.csv')
     # print('test start')
     # score_df = sp_test(
     #     '/Users/liujizhou/Desktop/ReinforcementLearning/some work/hintplaygame/res/teach/FF_hand_5_l1_3_l2_3_Att3_hand_5_l1_3_l2_3',
@@ -96,10 +116,9 @@ if __name__ == "__main__":
     # print(score_df)
     # score_df.to_csv('xp_teach_att3_ff.csv')
 
-    print('test start')
-    score_df = sp_test('/Users/mmw/Documents/GitHub/hintplaygame/res/LSTM_hs_3_l1_3_l2_3_TrueTrue2000000'
-                       , verb=False)
-    print(score_df)
+    #print('test start')
+    #score_df = sp_test('/Users/mmw/Documents/GitHub/hintplaygame/res//FF_hs_3_l1_3_l2_3_TrueTrue2000000', verb=True)
+    #print(score_df)
     # score_df.to_csv('xp_att2.csv')
 
     # print('test start')
