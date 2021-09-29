@@ -97,7 +97,8 @@ if __name__ == "__main__":
     # score_df.to_csv('xp_teach_att3_ff.csv')
 
     print('test start')
-    score_df = sp_test('/Users/mmw/Documents/GitHub/hintplaygame/res//FF_hs_3_l1_3_l2_3_TrueTrue2000000', verb=True)
+    score_df = sp_test('/Users/mmw/Documents/GitHub/hintplaygame/res/LSTM_hs_3_l1_3_l2_3_TrueTrue2000000'
+                       , verb=False)
     print(score_df)
     # score_df.to_csv('xp_att2.csv')
 
