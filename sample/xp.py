@@ -41,7 +41,7 @@ def sample_games(p1, p2, episodes=10000, verbose=False):
         if verbose:
             env.render()
         # P2 plays a card
-        obs2_a1, obs2_a2 = obs_to_agent(obs2, hp=hp)
+        obs2_a1, obs2_a2 = obs_to_agent(obs2, hp=hp2)
         if hp2.agent_type != 'FF':
             obs2_a2 = obs2_a2.reshape(-1, hp2.nlab1 + hp2.nlab2).T
         a2 = p2.select_action(torch.tensor([obs2_a2], device=device), evaluate=True)
@@ -89,12 +89,6 @@ def xp_test(agent_path, model='ff', verb=False):
 
 
 if __name__ == "__main__":
-    print('test start')
-    score_df = sp_test(
-        '/Users/liujizhou/Desktop/ReinforcementLearning/some work/hintplaygame/res/teach/FF_hand_5_l1_3_l2_3_Att3_hand_5_l1_3_l2_3',
-        model='att')
-    print(score_df)
-    score_df.to_csv('xp_teach_att3_ff.csv')
 
     # print('test start')
     # score_df = sp_test('res/Archive2', model='att', verb=True)
