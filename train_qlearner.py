@@ -151,8 +151,10 @@ if __name__ == '__main__':
         
     if args.agent_type in ['Att3', 'Att2', 'Att1', 'FF', 'LSTM']:
         hp_train = hp_train_current
+        print(f"start training agent {args.agent_type}!")
         res = train_agents(hp=hp_train)
     else:
+        print(f'{args.agent_type}')
         raise ValueError("Agent not found in base!")
 
     save_dir = f'res/{hp_train}'

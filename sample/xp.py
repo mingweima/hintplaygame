@@ -1,6 +1,9 @@
 import glob
 import os
 import pickle
+import sys
+sys.path.append(os.getcwd())
+sys.path.append("")
 
 import torch
 
@@ -66,7 +69,7 @@ def sp_test(agent_path, verb=False):
         score_dict[idx1] = {}
         for idx2, p2 in enumerate(agent2s):
             print(idx1, idx2, )
-            score_dict[idx1][idx2] = sample_games(p1, p2, episodes=1000, verbose=verb).mean()
+            score_dict[idx1][idx2] = sample_games(p1, p2, episodes=250, verbose=verb).mean()
 
     return DataFrame(score_dict)
 
@@ -90,25 +93,11 @@ def xp_test(agent_path, model='ff', verb=False):
 
 if __name__ == "__main__":
     print('test start')
-    score_df = sp_test(
-        '/Users/liujizhou/Desktop/ReinforcementLearning/some work/hintplaygame/res/teach/Att3_hand_5_l1_3_l2_3_FF_hand_5_l1_3_l2_3')
+    score_df = sp_test('res/Att3_hs_5_l1_3_l2_3_TrueTrue3000000')
     print(score_df)
-    score_df.to_csv('xp_teach_att3.csv')
+    score_df.to_csv('xp_att3.csv')
     
-    score_df = sp_test(
-        '/Users/liujizhou/Desktop/ReinforcementLearning/some work/hintplaygame/res/teach/Att2_hand_5_l1_3_l2_3_FF_hand_5_l1_3_l2_3')
-    print(score_df)
-    score_df.to_csv('xp_teach_att2.csv')
     
-    score_df = sp_test(
-        '/Users/liujizhou/Desktop/ReinforcementLearning/some work/hintplaygame/res/teach/Att1_hand_5_l1_3_l2_3_FF_hand_5_l1_3_l2_3')
-    print(score_df)
-    score_df.to_csv('xp_teach_att1.csv')
-    
-    score_df = sp_test(
-        '/Users/liujizhou/Desktop/ReinforcementLearning/some work/hintplaygame/res/teach/FF_hand_5_l1_3_l2_3_FF_hand_5_l1_3_l2_3')
-    print(score_df)
-    score_df.to_csv('xp_teach_ff.csv')
     # print('test start')
     # score_df = sp_test(
     #     '/Users/liujizhou/Desktop/ReinforcementLearning/some work/hintplaygame/res/teach/FF_hand_5_l1_3_l2_3_Att3_hand_5_l1_3_l2_3',
