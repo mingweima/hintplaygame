@@ -93,6 +93,7 @@ if __name__ == '__main__':
     parser.add_argument('--nlab1', type=int, default=3)
     parser.add_argument('--nlab2', type=int, default=3)
     parser.add_argument('--shuffle_cards', type=bool, default=False)
+    parser.add_argument('--same_hand', type=bool, default=False)
     parser.add_argument('--agent_type', type=str, default='Att3')
     parser.add_argument('--nepisodes', type=int, default=500000)
     parser.add_argument('--batch_size', type=int, default=512)

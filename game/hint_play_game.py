@@ -6,11 +6,11 @@ from copy import deepcopy
 
 sys.path.append(os.getcwd())
 sys.path.append("..")
+sys.path.append('path')
 
-import gym
+
 import numpy as np
 import torch
-from gym import spaces
 
 from game.hyperparams import hp_default
 
@@ -128,15 +128,13 @@ def apply_play_card(action, o1, o2, hp=hp_default):
     return r
 
 
-class TwoRoundHintGame(gym.Env, ABC):
+class TwoRoundHintGame:
 
     def __init__(self, hp=hp_default):
         # observation is (hand_size) number of cards (own cards) plus 1 special card
         # the special card is the playable card for p1 and the hinted card for p2
         # each card is tokenized to be a 2-hot vector of size (nlab1 + nlab2) where the 1s correspond to that label
         self.hp = hp
-        self.action_space = spaces.Discrete(hp.hand_size)
-        # self.observation_space = spaces.Box((1 + 2 * hp.hand_size) * (hp.nlab1 + hp.nlab2), )
         self.o1 = np.zeros(((1 + hp.hand_size) * (hp.nlab1 + hp.nlab2)))
         self.o2 = np.zeros(((1 + hp.hand_size) * (hp.nlab1 + hp.nlab2)))
         self.info = {}
