@@ -197,4 +197,15 @@ class TwoRoundHintGame:
             print(f'Final reward of game: {self.info["final_reward"]}')
             print('\n')
 
+    def get_card_symbol_in_round(self):
+        # Underline all cards the same as the playable card
+        if self.step_count == 0:
+            playable_card = self.o1[-(self.hp.nlab1 + self.hp.nlab2):]
+            return card_token_to_symbol(playable_card, hp=self.hp)
+        if self.step_count == 1 and not self.done:
+            card_hinted = self.o2[-(self.hp.nlab1 + self.hp.nlab2):]
+            return card_token_to_symbol(card_hinted, hp=self.hp)
+        if self.done:
+            card_played = self.info['card_played']
+            return card_token_to_symbol(card_played, hp=self.hp)
 

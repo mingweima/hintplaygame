@@ -2,6 +2,7 @@ import glob
 import os
 import pickle
 import sys
+
 sys.path.append(os.getcwd())
 sys.path.append("")
 
@@ -11,13 +12,9 @@ import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 import numpy as np
-from pandas import DataFrame
 
 from game.hint_play_game import TwoRoundHintGame
 from train_qlearner import obs_to_agent
-
-from game.hyperparams import Hp
-from agent.qlearner import QLearner
 
 
 def sample_games(p1, p2, episodes=10000, verbose=False):
@@ -27,7 +24,7 @@ def sample_games(p1, p2, episodes=10000, verbose=False):
 
     rewards = []
 
-#     print(f'agents are {hp1.agent_type} and {hp2.agent_type}')
+    #     print(f'agents are {hp1.agent_type} and {hp2.agent_type}')
 
     for i_episode in range(episodes):
         # Initialize the environment and state
@@ -56,37 +53,7 @@ def sample_games(p1, p2, episodes=10000, verbose=False):
     return np.array(rewards)
 
 
-
-
 if __name__ == "__main__":
-    # print('test start')
-    # score_df = sp_test('res/Att3_hs_5_l1_3_l2_3_TrueTrue3000000')
-    # print(score_df)
-    # score_df.to_csv('xp_att3.csv')
-    
-    
-    # print('test start')
-    # score_df = sp_test(
-    #     '/Users/liujizhou/Desktop/ReinforcementLearning/some work/hintplaygame/res/teach/FF_hand_5_l1_3_l2_3_Att3_hand_5_l1_3_l2_3',
-    #     model='att')
-    # print(score_df)
-    # score_df.to_csv('xp_teach_att3_ff.csv')
-
-    #print('test start')
-    #score_df = sp_test('/Users/mmw/Documents/GitHub/hintplaygame/res//FF_hs_3_l1_3_l2_3_TrueTrue2000000', verb=True)
-    #print(score_df)
-    # score_df.to_csv('xp_att2.csv')
-
-    # print('test start')
-    # score_df = sp_test('res/att3', model='att', verb=False)
-    # print(score_df)
-    # score_df.to_csv('xp_att3.csv')
-
-    # print('test start')
-    # score_df = sp_test('res/Att3_hand_5_l1_4_l2_4', model='att', verb=False)
-    # print(score_df)
-    # score_df.to_csv('xp_att3_l_4.csv')
-
     agent1s = []
     agent2s = []
     aid = 11
@@ -96,5 +63,3 @@ if __name__ == "__main__":
             agent1s += [res['p1']]
             agent2s += [res['p2']]
     print(sample_games(agent1s[aid], agent2s[aid], episodes=10, verbose=True))
-
-    # print(mechanical_test(verb=False))
