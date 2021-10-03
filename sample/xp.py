@@ -92,10 +92,26 @@ def xp_test(agent_path, model='ff', verb=False):
 
 
 if __name__ == "__main__":
-    # print('test start')
-    # score_df = sp_test('res/Att3_hs_5_l1_3_l2_3_TrueTrue3000000')
-    # print(score_df)
-    # score_df.to_csv('xp_att3.csv')
+    print('test start')
+#     score_df = sp_test('res/Att3_hs_5_l1_3_l2_3_FalseFalse4000000')
+#     print(score_df)
+#     score_df.to_csv('xp_att3_diff.csv')
+    
+#     score_df = sp_test('res/Att1_hs_5_l1_3_l2_3_FalseFalse4000000')
+#     print(score_df)
+#     score_df.to_csv('xp_att1_diff.csv')
+    
+#     score_df = sp_test('res/Att2_hs_5_l1_3_l2_3_FalseFalse4000000')
+#     print(score_df)
+#     score_df.to_csv('xp_att2_diff.csv')
+    
+    score_df = sp_test('res/FF_hs_5_l1_3_l2_3_FalseFalse4000000')
+    print(score_df)
+    score_df.to_csv('xp_ff_diff.csv')
+    
+    score_df = sp_test('res/LSTM_hs_5_l1_3_l2_3_FalseFalse4000000')
+    print(score_df)
+    score_df.to_csv('xp_lstm_diff.csv')
     
     
     # print('test start')
@@ -120,13 +136,13 @@ if __name__ == "__main__":
     # print(score_df)
     # score_df.to_csv('xp_att3_l_4.csv')
 
-    agent1s = []
-    agent2s = []
-    for filename in glob.glob(os.path.join("res/Att3_hs_5_l1_3_l2_3_TrueTrue3000000", "*.pkl")):
-       with open(filename, "rb") as f:
-           res = pickle.load(f)
-           agent1s += [res['p1']]
-           agent2s += [res['p2']]
-    print(sample_games_att(agent1s[1], agent2s[1], episodes=10, verbose=True))
+#     agent1s = []
+#     agent2s = []
+#     for filename in glob.glob(os.path.join("res/Att3_hs_5_l1_3_l2_3_TrueTrue3000000", "*.pkl")):
+#        with open(filename, "rb") as f:
+#            res = pickle.load(f)
+#            agent1s += [res['p1']]
+#            agent2s += [res['p2']]
+#     print(sample_games_att(agent1s[1], agent2s[1], episodes=10, verbose=True))
 
     # print(mechanical_test(verb=False))
