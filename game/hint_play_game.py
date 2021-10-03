@@ -130,11 +130,12 @@ def apply_play_card(action, o1, o2, hp=hp_default):
 
 class TwoRoundHintGame:
 
-    def __init__(self, hp=hp_default):
+    def __init__(self, hp=hp_default, initial_config=None):
         # observation is (hand_size) number of cards (own cards) plus 1 special card
         # the special card is the playable card for p1 and the hinted card for p2
         # each card is tokenized to be a 2-hot vector of size (nlab1 + nlab2) where the 1s correspond to that label
         self.hp = hp
+        self.initial_config = initial_config
         self.o1 = np.zeros(((1 + hp.hand_size) * (hp.nlab1 + hp.nlab2)))
         self.o2 = np.zeros(((1 + hp.hand_size) * (hp.nlab1 + hp.nlab2)))
         self.info = {}
@@ -144,7 +145,10 @@ class TwoRoundHintGame:
     def reset(self):
         self.step_count = 0
         self.info = {}
-        (self.o1, self.o2), self.info = get_initial_state(hp=self.hp)
+        if self.initial_config is None:
+            (self.o1, self.o2), self.info = get_initial_state(hp=self.hp)
+        else:
+            (self.o1, self.o2), self.info = self.initial_config['obs'], self.initial_config['info']
         obs = np.array([self.o1.astype(float), self.o2.astype(float)]).flatten()
         self.info['final_reward'] = 0
         self.done = False
