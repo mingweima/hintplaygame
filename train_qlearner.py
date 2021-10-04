@@ -39,19 +39,19 @@ def obs_to_agent(obs, hp=hp_train_default):
     o2 = obs[(1 + hp.hand_size) * (hp.nlab1 + hp.nlab2):]
     hand1 = o1[:-(hp.nlab1 + hp.nlab2)]
     hand2 = o2[:-(hp.nlab1 + hp.nlab2)]
-    # shuffle hands
-    """
-    hand1_permute = hand1.reshape(-1, hp.nlab1 + hp.nlab2)
-    np.random.shuffle(hand1_permute)
-    hand1 = hand1_permute.flatten()
-    hand2_permute = hand2.reshape(-1, hp.nlab1 + hp.nlab2)
-    np.random.shuffle(hand2_permute)
-    hand2 = hand2_permute.flatten()
-    """
 
-    obs1 = np.concatenate([hand2, o1]).flatten()
-    obs2 = np.concatenate([hand1, o2]).flatten()
-    return obs1, obs2
+    if hp.shuffle_cards:
+        # shuffle hands
+        hand1_permute = hand1.reshape(-1, hp.nlab1 + hp.nlab2)
+        np.random.shuffle(hand1_permute)
+        hand1 = hand1_permute.flatten()
+        hand2_permute = hand2.reshape(-1, hp.nlab1 + hp.nlab2)
+        np.random.shuffle(hand2_permute)
+        hand2 = hand2_permute.flatten()
+
+        obs1 = np.concatenate([hand2, o1]).flatten()
+        obs2 = np.concatenate([hand1, o2]).flatten()
+        return obs1, obs2
 
 
 def train_agents(hp=hp_train_default, verbose=True):
