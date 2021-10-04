@@ -90,7 +90,7 @@ def get_mechanical(obs, num_cards, card_dim):
 class QLearner:
     def __init__(self, player, env, policy_type='ff', hp=hp_default):
         self.player = player
-        self.action_space_size = env.action_space.n
+        self.action_space_size = hp.hand_size
         self.obs_space_size = (1 + 2 * hp.hand_size) * (hp.nlab1 + hp.nlab2)
         self.steps_done = 0
         self.memory = ReplayMemory(hp.replay_capacity)
