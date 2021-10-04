@@ -26,4 +26,4 @@ conda activate mlval
 srun="srun --exclusive -N1 -n1"
 parallel="parallel --delay 0.2 -j $SLURM_NTASKS --joblog runtask.log --resume"
 
-$parallel "$srun ./train.sh {1} {2}" ::: {1..43} ::: Att3
+$parallel "$srun ./train.sh {1} {2}" ::: {1..18} ::: FF LSTM
