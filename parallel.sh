@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=hpp # create a short name for your job
 #SBATCH --partition=broadwl
-#SBATCH --ntasks=200      # number of tasks per node
+#SBATCH --ntasks=43      # number of tasks per node
 #SBATCH --cpus-per-task=1        # cpu-cores per task (>1 if multi-threaded tasks)
 #SBATCH --mem-per-cpu=4000
 #SBATCH --output=cpu.out
@@ -26,4 +26,4 @@ conda activate mlval
 srun="srun --exclusive -N1 -n1"
 parallel="parallel --delay 0.2 -j $SLURM_NTASKS --joblog runtask.log --resume"
 
-$parallel "$srun ./train.sh {1} {2}" ::: {1..201} ::: Att3
+$parallel "$srun ./train.sh {1} {2}" ::: {1..43} ::: Att3
