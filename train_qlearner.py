@@ -49,9 +49,9 @@ def obs_to_agent(obs, hp=hp_train_default):
         np.random.shuffle(hand2_permute)
         hand2 = hand2_permute.flatten()
 
-        obs1 = np.concatenate([hand2, o1]).flatten()
-        obs2 = np.concatenate([hand1, o2]).flatten()
-        return obs1, obs2
+    obs1 = np.concatenate([hand2, o1]).flatten()
+    obs2 = np.concatenate([hand1, o2]).flatten()
+    return obs1, obs2
 
 
 def train_agents(hp=hp_train_default, verbose=True):
