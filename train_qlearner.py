@@ -4,6 +4,7 @@ import os
 import pickle
 import sys
 from collections import namedtuple
+from copy import  deepcopy
 
 import numpy as np
 import torch
@@ -42,15 +43,16 @@ def obs_to_agent(obs, hp=hp_train_default):
 
     if hp.shuffle_cards:
         # shuffle hands
-        hand1_permute = hand1.reshape(-1, hp.nlab1 + hp.nlab2)
+        hand1_permute = deepcopy(hand1).reshape(-1, hp.nlab1 + hp.nlab2)
         np.random.shuffle(hand1_permute)
-        hand1 = hand1_permute.flatten()
-        hand2_permute = hand2.reshape(-1, hp.nlab1 + hp.nlab2)
+        hand2_permute = deepcopy(hand2).reshape(-1, hp.nlab1 + hp.nlab2)
         np.random.shuffle(hand2_permute)
-        hand2 = hand2_permute.flatten()
+        obs1 = np.concatenate([hand2_permute.flatten(), o1]).flatten()
+        obs2 = np.concatenate([hand1_permute.flatten(), o2]).flatten()
+    else:
+        obs1 = np.concatenate([hand2, o1]).flatten()
+        obs2 = np.concatenate([hand1, o2]).flatten()
 
-    obs1 = np.concatenate([hand2, o1]).flatten()
-    obs2 = np.concatenate([hand1, o2]).flatten()
     return obs1, obs2
 
 
@@ -86,7 +88,6 @@ def train_agents(hp=hp_train_default, verbose=True):
         r = torch.tensor([r[0]], device=device)
         p1.memory.push(obs1_a1, a1, None, r)
         p2.memory.push(obs2_a2, a2, None, r)
-
         # Perform one step of the optimization (on the policy network)
         if i_episode % hp.update_frequency == 0:
             p1.optimize_model()
